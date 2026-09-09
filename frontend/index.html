@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AmazonHelp AI Support Agent | Trust Gate & Precedent Retrieval</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="navbar">
+      <div class="brand-logo">
+        <div class="brand-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div class="brand-title">
+          <h1>AmazonHelp <span>AI Support Agent</span></h1>
+          <p class="subtitle">FAISS Precedent Retrieval &amp; Multi-Signal Trust Gate</p>
+        </div>
+      </div>
+      <div class="header-badges">
+        <span class="badge badge-brand">Dataset: twcs.csv</span>
+        <span class="badge badge-status" id="system-health">System: Ready</span>
+      </div>
+    </header>
+
+    <!-- Main Content Grid -->
+    <main class="main-layout">
+      <!-- Left Column: Input & Controls -->
+      <section class="panel input-panel">
+        <div class="panel-header">
+          <h2>Customer Message</h2>
+          <span class="hint">Type an inquiry or pick a benchmark test case below</span>
+        </div>
+
+        <!-- Benchmark Example Pills -->
+        <div class="examples-container">
+          <div class="example-label">Pre-loaded Benchmark Cases:</div>
+          <div class="pills-grid" id="example-pills">
+            <button class="pill active" data-type="tracking">📦 Where is my package?</button>
+            <button class="pill" data-type="delay">⏳ 2 Days Late Delivery</button>
+            <button class="pill" data-type="return">🔄 Return Size Exchange</button>
+            <button class="pill pill-warning" data-type="dispute">💳 Duplicate Charge ($75)</button>
+            <button class="pill pill-danger" data-type="fraud">🚨 Stolen Card / Hacked ($500)</button>
+            <button class="pill pill-muted" data-type="ambiguous">❓ Ambiguous Fragment</button>
+          </div>
+        </div>
+
+        <!-- Text Input Form -->
+        <form id="analyze-form" class="inquiry-form">
+          <div class="textarea-wrapper">
+            <textarea
+              id="customer-input"
+              rows="4"
+              placeholder="e.g., Where is my package? Tracking number hasn't updated in 2 days..."
+              required
+            >Where is my package? The tracking number says in transit but hasn't updated in 2 days.</textarea>
+          </div>
+          <div class="form-actions">
+            <button type="submit" id="submit-btn" class="btn btn-primary">
+              <span class="btn-text">Analyze with Trust Gate</span>
+              <span class="spinner" id="loading-spinner" style="display: none;"></span>
+            </button>
+          </div>
+        </form>
+
+        <!-- Pipeline Flow Indicator -->
+        <div class="pipeline-stepper">
+          <div class="step" id="step-intent">
+            <div class="step-circle">1</div>
+            <div class="step-label">Intent &amp; Risk</div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step" id="step-retrieval">
+            <div class="step-circle">2</div>
+            <div class="step-label">FAISS Retrieval</div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step" id="step-grounding">
+            <div class="step-circle">3</div>
+            <div class="step-label">Groundedness</div>
+          </div>
+          <div class="step-connector"></div>
+          <div class="step" id="step-decision">
+            <div class="step-circle">4</div>
+            <div class="step-label">Trust Gate</div>
+          </div>
+        </div>
+
+        <!-- Evaluation Metrics Card -->
+        <div class="metrics-card">
+          <div class="metrics-header">
+            <h3>Safety &amp; Reliability Metrics (Unseen Test Set)</h3>
+          </div>
+          <div class="metrics-grid">
+            <div class="metric-item">
+              <div class="metric-val" id="metric-macro-f1">88.4%</div>
+              <div class="metric-lbl">Intent Macro F1</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-val" id="metric-recall">94.6%</div>
+              <div class="metric-lbl">Retrieval Recall@5</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-val metric-safe" id="metric-false-auto">0.00%</div>
+              <div class="metric-lbl">False Auto-Handling</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-val" id="metric-automation">62.8%</div>
+              <div class="metric-lbl">Safe Automation Rate</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Results & Audit Trail -->
+      <section class="panel results-panel" id="results-panel">
+        <!-- Decision Banner -->
+        <div class="decision-banner" id="decision-banner">
+          <div class="decision-header">
+            <span class="decision-badge badge-auto" id="decision-badge">AUTO-HANDLE</span>
+            <span class="reason-code-tag" id="reason-code-tag">CONFIDENT_GROUNDED</span>
+          </div>
+          <p class="decision-explanation" id="decision-explanation">
+            High intent confidence, strong historical grounding, and standard low-risk inquiry.
+          </p>
+        </div>
+
+        <!-- Intent & Confidence -->
+        <div class="result-card intent-card">
+          <div class="card-top">
+            <span class="card-label">CLASSIFIED INTENT</span>
+            <span class="confidence-badge" id="confidence-badge">94.5% Confidence</span>
+          </div>
+          <div class="intent-name" id="intent-name">ORDER_TRACKING_STATUS</div>
+          <div class="confidence-bar-bg">
+            <div class="confidence-bar-fill" id="confidence-bar-fill" style="width: 94.5%;"></div>
+          </div>
+        </div>
+
+        <!-- Draft Grounded Response -->
+        <div class="result-card response-card">
+          <div class="card-top">
+            <span class="card-label">GROUNDED DRAFT RESPONSE</span>
+            <span class="grounded-badge" id="grounded-badge">✓ Grounded in Historical Cases</span>
+          </div>
+          <div class="response-body" id="response-body">
+            "I'd be glad to help check on your shipment. You can track real-time carrier updates directly under 'Your Orders' here: [LINK]. If tracking shows no movement for 48 hours, please send us a DM with your order details so we can investigate."
+          </div>
+        </div>
+
+        <!-- 'Why?' Section (Audit Trail) -->
+        <div class="result-card why-card">
+          <div class="card-top">
+            <span class="card-label">WHY THIS DECISION? (AUDIT TRAIL)</span>
+          </div>
+          <ul class="audit-list" id="audit-list">
+            <li class="audit-item pass">
+              <span class="audit-icon">✓</span>
+              <span class="audit-text"><strong>Risk Assessment:</strong> Low-risk inquiry eligible for automated self-service.</span>
+            </li>
+            <li class="audit-item pass">
+              <span class="audit-icon">✓</span>
+              <span class="audit-text"><strong>Classification Confidence:</strong> 94.5% satisfies >= 75.0% threshold.</span>
+            </li>
+            <li class="audit-item pass">
+              <span class="audit-icon">✓</span>
+              <span class="audit-text"><strong>Historical Precedent:</strong> Top case similarity 89.2% with proven resolution.</span>
+            </li>
+            <li class="audit-item pass">
+              <span class="audit-icon">✓</span>
+              <span class="audit-text"><strong>Anti-Hallucination:</strong> No fake account actions or invented refund promises detected.</span>
+            </li>
+          </ul>
+        </div>
+
+        <!-- Historical Evidence Retrieved -->
+        <div class="result-card evidence-card">
+          <div class="card-top">
+            <span class="card-label">RETRIEVED HISTORICAL PRECEDENTS (FAISS)</span>
+            <span class="evidence-count" id="evidence-count">3 Cases Found</span>
+          </div>
+          <div class="cases-list" id="cases-list">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

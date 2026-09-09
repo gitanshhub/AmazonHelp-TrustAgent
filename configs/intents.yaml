@@ -1,0 +1,154 @@
+intents:
+  ORDER_TRACKING_STATUS:
+    description: "Customer wants to check shipment tracking, carrier progress, or expected arrival date."
+    risk_level: "LOW"
+    auto_eligible: true
+    requires_account_action: false
+    examples:
+      - "Where is my order? It was supposed to arrive today."
+      - "Can you give me the tracking link for my package?"
+      - "Has my parcel been shipped yet?"
+
+  DELIVERY_DELAY:
+    description: "Customer reports a late delivery or package running past guaranteed delivery window."
+    risk_level: "LOW"
+    auto_eligible: true
+    requires_account_action: false
+    examples:
+      - "My package is 2 days late and still hasn't arrived."
+      - "Delivery was guaranteed for yesterday, what happened?"
+      - "Why is my Prime shipping taking over a week?"
+
+  PACKAGE_DELIVERED_NOT_RECEIVED:
+    description: "Tracking status shows 'Delivered' but the customer cannot locate the package."
+    risk_level: "MEDIUM"
+    auto_eligible: true
+    requires_account_action: false
+    examples:
+      - "Tracking says delivered to front porch but nothing is there."
+      - "Status shows delivered at 2pm but no package arrived."
+      - "Carrier marked it as handed to resident, but nobody was home."
+
+  DAMAGED_OR_DEFECTIVE_ITEM:
+    description: "Customer received an item that is broken, damaged during transit, or defective."
+    risk_level: "MEDIUM"
+    auto_eligible: true
+    requires_account_action: false
+    examples:
+      - "The screen on the tablet I received is completely shattered."
+      - "Box arrived crushed and product inside is broken."
+      - "The device won't turn on, it seems defective out of the box."
+
+  WRONG_ITEM_RECEIVED:
+    description: "Customer received a different item, wrong size, color, or missing items in package."
+    risk_level: "MEDIUM"
+    auto_eligible: true
+    requires_account_action: false
+    examples:
+      - "I ordered black shoes but received red ones."
+      - "You sent me the wrong product, this is not what I paid for."
+      - "One item was missing from my multi-item order."
+
+  REFUND_NOT_RECEIVED:
+    description: "Customer returned an item or was promised a refund that has not appeared in their bank/card."
+    risk_level: "MEDIUM"
+    auto_eligible: true
+    requires_account_action: false
+    examples:
+      - "I returned the item 10 days ago and still haven't received my refund."
+      - "When will my refund reflect in my bank account?"
+      - "Your agent promised a refund last week, where is it?"
+
+  RETURN_EXCHANGE_INQUIRY:
+    description: "Customer is asking about return policy, how to generate a return label, or exchange an item."
+    risk_level: "LOW"
+    auto_eligible: true
+    requires_account_action: false
+    examples:
+      - "How do I return an item that doesn't fit?"
+      - "Where can I drop off my return package?"
+      - "Can I exchange this for a larger size?"
+
+  CANCELLATION_REQUEST:
+    description: "Customer wants to cancel an order or item that was recently placed."
+    risk_level: "LOW"
+    auto_eligible: true
+    requires_account_action: false
+    examples:
+      - "I need to cancel my order #123 immediately."
+      - "Can you cancel the order I placed by mistake 10 minutes ago?"
+      - "Please cancel my purchase before it ships."
+
+  PAYMENT_AND_BILLING_ISSUE:
+    description: "Customer reports billing discrepancies, duplicate charges, or failed checkout payments."
+    risk_level: "HIGH"
+    auto_eligible: false
+    requires_account_action: true
+    escalation_reason_code: "PAYMENT_DISPUTE"
+    examples:
+      - "I was charged twice for the same order."
+      - "Why did you bill my credit card $50 unexpectedly?"
+      - "Payment went through my bank but order says payment declined."
+
+  PRIME_MEMBERSHIP_INQUIRY:
+    description: "Customer inquiry regarding Amazon Prime subscription, renewal charge, or membership cancellation."
+    risk_level: "LOW"
+    auto_eligible: true
+    requires_account_action: false
+    examples:
+      - "I was charged for annual Prime renewal, how can I cancel?"
+      - "How do I share my Prime benefits with a household member?"
+      - "Do I get Prime student discount?"
+
+  DIGITAL_SERVICES_AND_DEVICE:
+    description: "Technical troubleshooting for Kindle, Fire TV, Prime Video streaming, or digital downloads."
+    risk_level: "LOW"
+    auto_eligible: true
+    requires_account_action: false
+    examples:
+      - "Prime Video is giving error code 5004 on my smart TV."
+      - "My Kindle won't connect to Wi-Fi."
+      - "Can't download my purchased e-book."
+
+  ACCOUNT_ACCESS_SECURITY:
+    description: "Customer has trouble logging in, OTP verification issues, or account suspended/locked."
+    risk_level: "HIGH"
+    auto_eligible: false
+    requires_account_action: true
+    escalation_reason_code: "ACCOUNT_SPECIFIC_ACTION"
+    examples:
+      - "I cannot log into my account, not receiving the verification code."
+      - "My account was locked for suspicious activity, please unlock it."
+      - "Need to reset my password but I don't have access to the old phone number."
+
+  UNAUTHORIZED_TRANSACTION_FRAUD:
+    description: "Customer reports stolen card, unauthorized order placed, or suspected account compromise."
+    risk_level: "CRITICAL"
+    auto_eligible: false
+    requires_account_action: true
+    escalation_reason_code: "HIGH_RISK"
+    examples:
+      - "Someone hacked my account and placed a $1000 order!"
+      - "My card was stolen and used on Amazon, cancel and report fraud."
+      - "I did not authorize this charge, report security breach."
+
+  GENERAL_INQUIRY_FEEDBACK:
+    description: "General questions about promotions, packaging feedback, seller feedback, or store policies."
+    risk_level: "LOW"
+    auto_eligible: true
+    requires_account_action: false
+    examples:
+      - "Do you deliver on Sundays?"
+      - "Just wanted to say the delivery driver was wonderful!"
+      - "Is gift wrapping available for this item?"
+
+  OTHER:
+    description: "Customer inquiry does not fit cleanly into predefined intents, or message is ambiguous."
+    risk_level: "MEDIUM"
+    auto_eligible: false
+    requires_account_action: false
+    escalation_reason_code: "LOW_CONFIDENCE"
+    examples:
+      - "Can someone contact me about something weird?"
+      - "Check my dm right now"
+      - "Hello I need help"

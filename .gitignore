@@ -1,0 +1,28 @@
+# Python virtual environment
+.venv/
+venv/
+ENV/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Raw massive Kaggle dataset (500MB)
+twcs/twcs.csv
+twcs/
+
+# Logs & temp files
+*.log
+scratch/
+.system_generated/
+
+# OS specific
+.DS_Store
+Thumbs.db

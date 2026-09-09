@@ -1,0 +1,98 @@
+{
+  "total_tweets": 2811774,
+  "inbound_count": 1537843,
+  "outbound_count": 1273931,
+  "unique_brands": 108,
+  "brands": [
+    {
+      "brand": "AmazonHelp",
+      "total_tweets": 169840,
+      "multiturn_replies": 85274,
+      "domain": "E-Commerce / Deliveries"
+    },
+    {
+      "brand": "AppleSupport",
+      "total_tweets": 106860,
+      "multiturn_replies": 31564,
+      "domain": "Tech / Hardware / OS"
+    },
+    {
+      "brand": "Uber_Support",
+      "total_tweets": 56270,
+      "multiturn_replies": 18036,
+      "domain": "Rideshare / Transport"
+    },
+    {
+      "brand": "SpotifyCares",
+      "total_tweets": 43265,
+      "multiturn_replies": 13786,
+      "domain": "Digital Subscription / Music"
+    },
+    {
+      "brand": "Delta",
+      "total_tweets": 42253,
+      "multiturn_replies": 12014,
+      "domain": "Airlines / Travel"
+    },
+    {
+      "brand": "Tesco",
+      "total_tweets": 38573,
+      "multiturn_replies": 11148,
+      "domain": "Retail / Supermarket"
+    },
+    {
+      "brand": "AmericanAir",
+      "total_tweets": 36764,
+      "multiturn_replies": 14556,
+      "domain": "Airlines / Travel"
+    },
+    {
+      "brand": "TMobileHelp",
+      "total_tweets": 34317,
+      "multiturn_replies": 9759,
+      "domain": "Telecom / Mobile"
+    },
+    {
+      "brand": "comcastcares",
+      "total_tweets": 33031,
+      "multiturn_replies": 7625,
+      "domain": "Telecom / ISP"
+    },
+    {
+      "brand": "British_Airways",
+      "total_tweets": 29361,
+      "multiturn_replies": 10099,
+      "domain": "Airlines / Travel"
+    },
+    {
+      "brand": "SouthwestAir",
+      "total_tweets": 28977,
+      "multiturn_replies": 8580,
+      "domain": "Airlines / Travel"
+    },
+    {
+      "brand": "VirginTrains",
+      "total_tweets": 27817,
+      "multiturn_replies": 15235,
+      "domain": "Support"
+    },
+    {
+      "brand": "Ask_Spectrum",
+      "total_tweets": 25860,
+      "multiturn_replies": 7693,
+      "domain": "Telecom / ISP"
+    },
+    {
+      "brand": "XboxSupport",
+      "total_tweets": 24557,
+      "multiturn_replies": 10241,
+      "domain": "Gaming / Consoles"
+    },
+    {
+      "brand": "sprintcare",
+      "total_tweets": 22381,
+      "multiturn_replies": 7334,
+      "domain": "Support"
+    }
+  ]
+}

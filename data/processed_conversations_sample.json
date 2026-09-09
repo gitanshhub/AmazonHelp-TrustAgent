@@ -1,0 +1,522 @@
+[
+  {
+    "conversation_id": "conv_272",
+    "brand": "AmazonHelp",
+    "num_turns": 7,
+    "customer_inquiry": "amazon\u306efireTVstick\u304c\u898b\u308c\u306a\u3044\ud83d\ude22",
+    "brand_resolution": "\u3053\u3093\u306b\u3061\u306f\u3001\u30a2\u30de\u30be\u30f3\u516c\u5f0f\u3067\u3059\u3002Fire TV Stick\u304c\u898b\u308c\u306a\u3044\u3068\u3044\u3046\u306e\u306f\u3001\u3069\u306e\u3088\u3046\u306a\u72b6\u6cc1\u3067\u3057\u3087\u3046\u304b\u3002\u4e00\u822c\u7684\u306a\u30c8\u30e9\u30d6\u30eb\u30b7\u30e5\u30fc\u30c6\u30a3\u30f3\u30b0\u3092\u8a18\u8f09\u3057\u305f\u30d8\u30eb\u30d7\u304c\u3054\u3056\u3044\u307e\u3059\u306e\u3067\u3001\u3054\u53c2\u7167\u304f\u3060\u3055\u3044\u3002[LINK] ET",
+    "messages": [
+      {
+        "role": "customer",
+        "text": "amazon\u306efireTVstick\u304c\u898b\u308c\u306a\u3044\ud83d\ude22",
+        "tweet_id": "272"
+      },
+      {
+        "role": "brand",
+        "text": "\u3053\u3093\u306b\u3061\u306f\u3001\u30a2\u30de\u30be\u30f3\u516c\u5f0f\u3067\u3059\u3002Fire TV Stick\u304c\u898b\u308c\u306a\u3044\u3068\u3044\u3046\u306e\u306f\u3001\u3069\u306e\u3088\u3046\u306a\u72b6\u6cc1\u3067\u3057\u3087\u3046\u304b\u3002\u4e00\u822c\u7684\u306a\u30c8\u30e9\u30d6\u30eb\u30b7\u30e5\u30fc\u30c6\u30a3\u30f3\u30b0\u3092\u8a18\u8f09\u3057\u305f\u30d8\u30eb\u30d7\u304c\u3054\u3056\u3044\u307e\u3059\u306e\u3067\u3001\u3054\u53c2\u7167\u304f\u3060\u3055\u3044\u3002[LINK] ET",
+        "tweet_id": "269"
+      },
+      {
+        "role": "customer",
+        "text": "\u3042\u308a\u304c\u3068\u3046\u3054\u3056\u3044\u307e\u3059\u3002 \u4eca\u3001\u96fb\u8a71\u3067\u4e3b\u4eba\u304c\u5bfe\u5fdc\u3057\u3066\u3044\u305f\u3060\u3044\u3066\u307e\u3059\u3002",
+        "tweet_id": "270"
+      },
+      {
+        "role": "customer",
+        "text": "\u96fb\u8a71\u3067\u5bfe\u5fdc\u3057\u3066\u3082\u3089\u3044\u307e\u3057\u305f\u304c\u6539\u826f\u3055\u308c\u307e\u305b\u3093\u3067\u3057\u305f\u3002 \u4fdd\u8a3c\u671f\u9593\u3082\u904e\u304e\u3066\u308b\u306e\u3067\u8cb7\u3044\u76f4\u3057\u306b\u306a\u308b\u3093\u3067\u3057\u3087\u3046\u306d\u3002",
+        "tweet_id": "271"
+      },
+      {
+        "role": "brand",
+        "text": "\u30ab\u30b9\u30bf\u30de\u30fc\u30b5\u30fc\u30d3\u30b9\u306b\u3066\u304a\u554f\u3044\u5408\u308f\u305b\u6e08\u307f\u3068\u306e\u3053\u3068\u3067\u3001\u304a\u624b\u6570\u3092\u304a\u304b\u3051\u3044\u305f\u3057\u307e\u3057\u305f\u3002\u30ea\u30d7\u30e9\u30a4\u3044\u305f\u3060\u304d\u3042\u308a\u304c\u3068\u3046\u3054\u3056\u3044\u307e\u3057\u305f\u3002ET",
+        "tweet_id": "273"
+      },
+      {
+        "role": "customer",
+        "text": "\u3053\u3061\u3089\u3053\u305d\u3042\u308a\u304c\u3068\u3046\u3054\u3056\u3044\u307e\u3057\u305f\u3002",
+        "tweet_id": "274"
+      },
+      {
+        "role": "brand",
+        "text": "\u6050\u308c\u5165\u308a\u307e\u3059\u3002\u81f3\u3089\u306a\u3044\u70b9\u3082\u591a\u3005\u3042\u308b\u304b\u3068\u306f\u5b58\u3058\u307e\u3059\u304c\u3001\u4eca\u5f8c\u3068\u3082\u3069\u3046\u305e\u3088\u308d\u3057\u304f\u304a\u9858\u3044\u3057\u307e\u3059\u3002ET",
+        "tweet_id": "275"
+      }
+    ]
+  },
+  {
+    "conversation_id": "conv_325",
+    "brand": "AmazonHelp",
+    "num_turns": 2,
+    "customer_inquiry": "amazon\u30d7\u30e9\u30a4\u30e0\u30d3\u30c7\u30aa\u3001\u518d\u751f\u30a8\u30e9\u30fc\u304c\u591a\u3044\u3067\u3059",
+    "brand_resolution": "\u3054\u4e0d\u4fbf\u3092\u304a\u304b\u3051\u3057\u3066\u304a\u308a\u307e\u3059\u3002\u30a2\u30d7\u30ea\u3092\u3054\u5229\u7528\u3067\u3057\u3087\u3046\u304b\u3002\u5f37\u5236\u505c\u6b62&gt;\u7aef\u672b\u306e\u518d\u8d77\u52d5\u306b\u3066\u6539\u5584\u3059\u308b\u5834\u5408\u304c\u3054\u3056\u3044\u307e\u3059\u306e\u3067\u3001\u304a\u8a66\u3057\u304f\u3060\u3055\u3044\u3002\u6539\u5584\u3057\u306a\u3044\u5834\u5408\u306f\u3001\u72b6\u6cc1\u3092\u78ba\u8a8d\u3057\u3054\u6848\u5185\u3055\u305b\u3066\u3044\u305f\u3060\u304d\u307e\u3059\u306e\u3067\u3053\u3061\u3089\u304b\u3089\u30ab\u30b9\u30bf\u30de\u30fc\u30b5\u30fc\u30d3\u30b9\u307e\u3067\u3054\u9023\u7d61\u304f\u3060\u3055\u3044\u3002[LINK] ET",
+    "messages": [
+      {
+        "role": "customer",
+        "text": "amazon\u30d7\u30e9\u30a4\u30e0\u30d3\u30c7\u30aa\u3001\u518d\u751f\u30a8\u30e9\u30fc\u304c\u591a\u3044\u3067\u3059",
+        "tweet_id": "325"
+      },
+      {
+        "role": "brand",
+        "text": "\u3054\u4e0d\u4fbf\u3092\u304a\u304b\u3051\u3057\u3066\u304a\u308a\u307e\u3059\u3002\u30a2\u30d7\u30ea\u3092\u3054\u5229\u7528\u3067\u3057\u3087\u3046\u304b\u3002\u5f37\u5236\u505c\u6b62&gt;\u7aef\u672b\u306e\u518d\u8d77\u52d5\u306b\u3066\u6539\u5584\u3059\u308b\u5834\u5408\u304c\u3054\u3056\u3044\u307e\u3059\u306e\u3067\u3001\u304a\u8a66\u3057\u304f\u3060\u3055\u3044\u3002\u6539\u5584\u3057\u306a\u3044\u5834\u5408\u306f\u3001\u72b6\u6cc1\u3092\u78ba\u8a8d\u3057\u3054\u6848\u5185\u3055\u305b\u3066\u3044\u305f\u3060\u304d\u307e\u3059\u306e\u3067\u3053\u3061\u3089\u304b\u3089\u30ab\u30b9\u30bf\u30de\u30fc\u30b5\u30fc\u30d3\u30b9\u307e\u3067\u3054\u9023\u7d61\u304f\u3060\u3055\u3044\u3002[LINK] ET",
+        "tweet_id": "324"
+      }
+    ]
+  },
+  {
+    "conversation_id": "conv_617",
+    "brand": "AmazonHelp",
+    "num_turns": 5,
+    "customer_inquiry": "Way to drop the ball on customer service so pissed right now!",
+    "brand_resolution": "I'm sorry we've let you down! Without providing any personal information, will you describe the issue? We'd love to help.",
+    "messages": [
+      {
+        "role": "customer",
+        "text": "Way to drop the ball on customer service so pissed right now!",
+        "tweet_id": "617"
+      },
+      {
+        "role": "brand",
+        "text": "I'm sorry we've let you down! Without providing any personal information, will you describe the issue? We'd love to help.",
+        "tweet_id": "615"
+      },
+      {
+        "role": "customer",
+        "text": "3 different people have given 3 different answers and I still don't have my order. Says delivered Saturday, was not, I was home all day",
+        "tweet_id": "616"
+      },
+      {
+        "role": "brand",
+        "text": "We'd like to take a further look into this with you! Please reach us by phone or chat here: [LINK]",
+        "tweet_id": "618"
+      },
+      {
+        "role": "customer",
+        "text": "I frankly don't have the patience for another chat with your \"customer service\" people today.",
+        "tweet_id": "619"
+      }
+    ]
+  },
+  {
+    "conversation_id": "conv_621",
+    "brand": "AmazonHelp",
+    "num_turns": 2,
+    "customer_inquiry": "I want my amazon payments account CLOSED. dm me please.",
+    "brand_resolution": "I am unable to affect your account via Twitter. For real time support, phone or chat use this link: [LINK]",
+    "messages": [
+      {
+        "role": "customer",
+        "text": "I want my amazon payments account CLOSED. dm me please.",
+        "tweet_id": "621"
+      },
+      {
+        "role": "brand",
+        "text": "I am unable to affect your account via Twitter. For real time support, phone or chat use this link: [LINK]",
+        "tweet_id": "620"
+      }
+    ]
+  },
+  {
+    "conversation_id": "conv_624",
+    "brand": "AmazonHelp",
+    "num_turns": 4,
+    "customer_inquiry": "also, beim Addams Family-Film in Prime sind Bild und Ton nicht wirklich synchron. Wie kommt's?",
+    "brand_resolution": "Hi, wir erhalten die Filme/Serien so vom jeweiligen Studio. Gebe ich aber direkt als Feedback dorthin weiter. Gru\u00df",
+    "messages": [
+      {
+        "role": "customer",
+        "text": "also, beim Addams Family-Film in Prime sind Bild und Ton nicht wirklich synchron. Wie kommt's?",
+        "tweet_id": "624"
+      },
+      {
+        "role": "brand",
+        "text": "Hi, wir erhalten die Filme/Serien so vom jeweiligen Studio. Gebe ich aber direkt als Feedback dorthin weiter. Gru\u00df",
+        "tweet_id": "622"
+      },
+      {
+        "role": "customer",
+        "text": "Okay, danke f\u00fcr die Info",
+        "tweet_id": "623"
+      },
+      {
+        "role": "brand",
+        "text": "Wir haben zu danken. Sch\u00f6nen Abend noch.",
+        "tweet_id": "625"
+      }
+    ]
+  },
+  {
+    "conversation_id": "conv_628",
+    "brand": "AmazonHelp",
+    "num_turns": 4,
+    "customer_inquiry": "How about you guys figure out my Xbox One X project Scorpio edition first. No expected delivery or shipping date and it\u2019s only a week away",
+    "brand_resolution": "I'm sorry for the wait. You'll receive an email as soon as we have an estimated delivery date.",
+    "messages": [
+      {
+        "role": "customer",
+        "text": "How about you guys figure out my Xbox One X project Scorpio edition first. No expected delivery or shipping date and it\u2019s only a week away",
+        "tweet_id": "628"
+      },
+      {
+        "role": "brand",
+        "text": "I'm sorry for the wait. You'll receive an email as soon as we have an estimated delivery date.",
+        "tweet_id": "626"
+      },
+      {
+        "role": "customer",
+        "text": "Yeah this is crazy we\u2019re less than a week away and still no Shipping Information on something that we Pre-ordered back in August",
+        "tweet_id": "627"
+      },
+      {
+        "role": "brand",
+        "text": "Thanks for your patience.",
+        "tweet_id": "629"
+      }
+    ]
+  },
+  {
+    "conversation_id": "conv_632",
+    "brand": "AmazonHelp",
+    "num_turns": 2,
+    "customer_inquiry": "my package was \u2018accidentally\u2019 opened.. 4 items missing worth \u00a397. You need better delivery drivers!! [LINK]",
+    "brand_resolution": "I'm sorry your order arrived in this condition! Please reach out to us for available options: [LINK]",
+    "messages": [
+      {
+        "role": "customer",
+        "text": "my package was \u2018accidentally\u2019 opened.. 4 items missing worth \u00a397. You need better delivery drivers!! [LINK]",
+        "tweet_id": "632"
+      },
+      {
+        "role": "brand",
+        "text": "I'm sorry your order arrived in this condition! Please reach out to us for available options: [LINK]",
+        "tweet_id": "631"
+      }
+    ]
+  },
+  {
+    "conversation_id": "conv_634",
+    "brand": "AmazonHelp",
+    "num_turns": 2,
+    "customer_inquiry": "why is my order at my local courier for the last 6 days and still hasn\u2019t been delivered to me?? Over 1 week late \ud83d\ude21",
+    "brand_resolution": "I'm sorry for the wait. Please reach out to us so we can take a closer look at this delivery: [LINK]",
+    "messages": [
+      {
+        "role": "customer",
+        "text": "why is my order at my local courier for the last 6 days and still hasn\u2019t been delivered to me?? Over 1 week late \ud83d\ude21",
+        "tweet_id": "634"
+      },
+      {
+        "role": "brand",
+        "text": "I'm sorry for the wait. Please reach out to us so we can take a closer look at this delivery: [LINK]",
+        "tweet_id": "633"
+      }
+    ]
+  },
+  {
+    "conversation_id": "conv_636",
+    "brand": "AmazonHelp",
+    "num_turns": 2,
+    "customer_inquiry": "Thanks for the style advice, look ...I think? #Halloween2017 #flamingo [LINK]",
+    "brand_resolution": "Alexa says both styles are working for you! My vote goes to the Flamingo look!",
+    "messages": [
+      {
+        "role": "customer",
+        "text": "Thanks for the style advice, look ...I think? #Halloween2017 #flamingo [LINK]",
+        "tweet_id": "636"
+      },
+      {
+        "role": "brand",
+        "text": "Alexa says both styles are working for you! My vote goes to the Flamingo look!",
+        "tweet_id": "635"
+      }
+    ]
+  },
+  {
+    "conversation_id": "conv_643",
+    "brand": "AmazonHelp",
+    "num_turns": 7,
+    "customer_inquiry": "Bought an Echo Show and it won\u2019t recognize a single account in our household. WTF, guys?",
+    "brand_resolution": "Oh no, I'm sorry for the issues! For troubleshooting, please check out our Echo Help pages here: [LINK]",
+    "messages": [
+      {
+        "role": "customer",
+        "text": "Bought an Echo Show and it won\u2019t recognize a single account in our household. WTF, guys?",
+        "tweet_id": "643"
+      },
+      {
+        "role": "brand",
+        "text": "Oh no, I'm sorry for the issues! For troubleshooting, please check out our Echo Help pages here: [LINK]",
+        "tweet_id": "642"
+      },
+      {
+        "role": "customer",
+        "text": "Nothing there helped me with the Echo Show",
+        "tweet_id": "641"
+      },
+      {
+        "role": "customer",
+        "text": "Is the Echo Show no longer supported?",
+        "tweet_id": "640"
+      },
+      {
+        "role": "brand",
+        "text": "The Echo Show is supported, please reach us for some live troubleshooting at your convenience: [LINK]",
+        "tweet_id": "639"
+      },
+      {
+        "role": "customer",
+        "text": "Hi ready for some help",
+        "tweet_id": "638"
+      },
+      {
+        "role": "brand",
+        "text": "Were you able to reach us at the link DW provided?",
+        "tweet_id": "637"
+      }
+    ]
+  },
+  {
+    "conversation_id": "conv_646",
+    "brand": "AmazonHelp",
+    "num_turns": 4,
+    "customer_inquiry": ". Item has not been delivered but tracking says it was handed to me over an hour ago... 2nd time this has happened. Sort it out [LINK]",
+    "brand_resolution": "I'm so sorry you didn't receive your parcel! We'd like a chance to look into this with you here: [LINK]",
+    "messages": [
+      {
+        "role": "customer",
+        "text": ". Item has not been delivered but tracking says it was handed to me over an hour ago... 2nd time this has happened. Sort it out [LINK]",
+        "tweet_id": "646"
+      },
+      {
+        "role": "brand",
+        "text": "I'm so sorry you didn't receive your parcel! We'd like a chance to look into this with you here: [LINK]",
+        "tweet_id": "644"
+      },
+      {
+        "role": "customer",
+        "text": "That page is useless - doesn\u2019t allow me to state it hasn\u2019t been delivered; only tells me it has! How can you sort this out?",
+        "tweet_id": "645"
+      },
+      {
+        "role": "brand",
+        "text": "You can also request a call back here Martin [LINK]",
+        "tweet_id": "647"
+      }
+    ]
+  },
+  {
+    "conversation_id": "conv_649",
+    "brand": "AmazonHelp",
+    "num_turns": 2,
+    "customer_inquiry": "In response to your packing video, this packaging was for a 2ft washing line pole [LINK]",
+    "brand_resolution": "Thanks for bringing this to our attention! Please also leave packing feedback here: [LINK] so we may improve.",
+    "messages": [
+      {
+        "role": "customer",
+        "text": "In response to your packing video, this packaging was for a 2ft washing line pole [LINK]",
+        "tweet_id": "649"
+      },
+      {
+        "role": "brand",
+        "text": "Thanks for bringing this to our attention! Please also leave packing feedback here: [LINK] so we may improve.",
+        "tweet_id": "648"
+      }
+    ]
+  },
+  {
+    "conversation_id": "conv_652",
+    "brand": "AmazonHelp",
+    "num_turns": 6,
+    "customer_inquiry": "Is it possible to prevent AMZL from delivering my packages moving forward? Stuff is either lost/stolen/broken EVERY time.",
+    "brand_resolution": "Oh no! We want to hear more about your experience with AMZL. Please provide your feedback here: [LINK]",
+    "messages": [
+      {
+        "role": "customer",
+        "text": "Is it possible to prevent AMZL from delivering my packages moving forward? Stuff is either lost/stolen/broken EVERY time.",
+        "tweet_id": "652"
+      },
+      {
+        "role": "brand",
+        "text": "Oh no! We want to hear more about your experience with AMZL. Please provide your feedback here: [LINK]",
+        "tweet_id": "650"
+      },
+      {
+        "role": "customer",
+        "text": "I don't want a form to fill out that logs a response no one reads. I want to prevent AMZL from touching my stuff. Possible, or no?",
+        "tweet_id": "651"
+      },
+      {
+        "role": "brand",
+        "text": "Is there a current order you're having difficulties with? Please let us know, we'd like to help!",
+        "tweet_id": "653"
+      },
+      {
+        "role": "customer",
+        "text": "Already started the return. UPS gets it from my doorstep tomorrow. Order 111-5014070-4118645",
+        "tweet_id": "654"
+      },
+      {
+        "role": "brand",
+        "text": "Provide your details here: [LINK] and my team will escalate the order to Amazon Logistics for feedback.",
+        "tweet_id": "655"
+      }
+    ]
+  },
+  {
+    "conversation_id": "conv_659",
+    "brand": "AmazonHelp",
+    "num_turns": 4,
+    "customer_inquiry": ", it\u2019d be nice if the book I waited 4 months for wasn\u2019t damaged inside of an undented box. #twinpeaks #twin\u2026 [LINK] [LINK]",
+    "brand_resolution": "I'm sorry your book arrived this way! You can find replacement/refund options here: [LINK]",
+    "messages": [
+      {
+        "role": "customer",
+        "text": ", it\u2019d be nice if the book I waited 4 months for wasn\u2019t damaged inside of an undented box. #twinpeaks #twin\u2026 [LINK] [LINK]",
+        "tweet_id": "659"
+      },
+      {
+        "role": "brand",
+        "text": "I'm sorry your book arrived this way! You can find replacement/refund options here: [LINK]",
+        "tweet_id": "658"
+      },
+      {
+        "role": "customer",
+        "text": "Already handled, just venting. It was a pretty big bummer.",
+        "tweet_id": "657"
+      },
+      {
+        "role": "brand",
+        "text": "Let us know if there\u2019s anything else we can do for you! We're happy to help out any way we can!",
+        "tweet_id": "656"
+      }
+    ]
+  },
+  {
+    "conversation_id": "conv_661",
+    "brand": "AmazonHelp",
+    "num_turns": 2,
+    "customer_inquiry": "Feliz #Halloween2017 [LINK]",
+    "brand_resolution": "\u00a1Que lindoooooooooo! \ud83d\ude0d\ud83d\udc36\ud83c\udf83 ^JJ [LINK]",
+    "messages": [
+      {
+        "role": "customer",
+        "text": "Feliz #Halloween2017 [LINK]",
+        "tweet_id": "661"
+      },
+      {
+        "role": "brand",
+        "text": "\u00a1Que lindoooooooooo! \ud83d\ude0d\ud83d\udc36\ud83c\udf83 ^JJ [LINK]",
+        "tweet_id": "660"
+      }
+    ]
+  },
+  {
+    "conversation_id": "conv_664",
+    "brand": "AmazonHelp",
+    "num_turns": 2,
+    "customer_inquiry": "delivery I paid for today,didn\u2019t arrive.why not?i paid enough for it.where is it??I\u2019m unhappy.refund the delivery charge",
+    "brand_resolution": "Oh no! Please contact us via phone/chat here: [LINK] We're unable to view order details via Twitter.",
+    "messages": [
+      {
+        "role": "customer",
+        "text": "delivery I paid for today,didn\u2019t arrive.why not?i paid enough for it.where is it??I\u2019m unhappy.refund the delivery charge",
+        "tweet_id": "664"
+      },
+      {
+        "role": "brand",
+        "text": "Oh no! Please contact us via phone/chat here: [LINK] We're unable to view order details via Twitter.",
+        "tweet_id": "663"
+      }
+    ]
+  },
+  {
+    "conversation_id": "conv_667",
+    "brand": "AmazonHelp",
+    "num_turns": 3,
+    "customer_inquiry": "Anna Inspired in idea lab at school to be package being shipped to Narnia! \"Amazon can go anywhere\" according to Anna. [LINK]",
+    "brand_resolution": "You're not lion! She even shows witch way is up! That's quite the wardrobe!",
+    "messages": [
+      {
+        "role": "customer",
+        "text": "Anna Inspired in idea lab at school to be package being shipped to Narnia! \"Amazon can go anywhere\" according to Anna. [LINK]",
+        "tweet_id": "667"
+      },
+      {
+        "role": "brand",
+        "text": "You're not lion! She even shows witch way is up! That's quite the wardrobe!",
+        "tweet_id": "665"
+      },
+      {
+        "role": "customer",
+        "text": "Aww your reply made her night!",
+        "tweet_id": "666"
+      }
+    ]
+  },
+  {
+    "conversation_id": "conv_670",
+    "brand": "AmazonHelp",
+    "num_turns": 3,
+    "customer_inquiry": "They sent the feckin' order to Germany! Some dozy driver is looking for an address in the wrong country! I'm so done with Amazon!",
+    "brand_resolution": "Oh my! I'm sorry for the troubles! Contact us by Phone or Chat: [LINK] &amp; we'll be glad to help!",
+    "messages": [
+      {
+        "role": "customer",
+        "text": "They sent the feckin' order to Germany! Some dozy driver is looking for an address in the wrong country! I'm so done with Amazon!",
+        "tweet_id": "670"
+      },
+      {
+        "role": "brand",
+        "text": "Oh my! I'm sorry for the troubles! Contact us by Phone or Chat: [LINK] &amp; we'll be glad to help!",
+        "tweet_id": "668"
+      },
+      {
+        "role": "customer",
+        "text": "I just said it's been sorted! I've been refunded! I'm just not impressed with the service any more.",
+        "tweet_id": "669"
+      }
+    ]
+  },
+  {
+    "conversation_id": "conv_672",
+    "brand": "AmazonHelp",
+    "num_turns": 3,
+    "customer_inquiry": "I'm NEVER using Amazon again! After waiting in all day as item is \"out for delivery\", they've only gone and sent it to the WRONG COUNTRY!",
+    "brand_resolution": "Oh no! We're here to help! Without providing account details will you give us more information about what has happened?",
+    "messages": [
+      {
+        "role": "customer",
+        "text": "I'm NEVER using Amazon again! After waiting in all day as item is \"out for delivery\", they've only gone and sent it to the WRONG COUNTRY!",
+        "tweet_id": "672"
+      },
+      {
+        "role": "brand",
+        "text": "Oh no! We're here to help! Without providing account details will you give us more information about what has happened?",
+        "tweet_id": "674"
+      },
+      {
+        "role": "customer",
+        "text": "I've dealt with it and got a refund. But how you lot managed to send my item to GERMANY beggars belief!",
+        "tweet_id": "2986042"
+      }
+    ]
+  },
+  {
+    "conversation_id": "conv_676",
+    "brand": "AmazonHelp",
+    "num_turns": 2,
+    "customer_inquiry": "Yeah idk the shipping company and it says \u201cmike Ziemer\u201d signed for it in the mail room at our building lol",
+    "brand_resolution": "That's okay! Thanks for checking! Please contact us by phone or chat and we can look into this: [LINK]",
+    "messages": [
+      {
+        "role": "customer",
+        "text": "Yeah idk the shipping company and it says \u201cmike Ziemer\u201d signed for it in the mail room at our building lol",
+        "tweet_id": "676"
+      },
+      {
+        "role": "brand",
+        "text": "That's okay! Thanks for checking! Please contact us by phone or chat and we can look into this: [LINK]",
+        "tweet_id": "675"
+      }
+    ]
+  }
+]

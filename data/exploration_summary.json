@@ -1,0 +1,89 @@
+{
+  "file_size_mb": 492.58,
+  "total_tweets": 2811774,
+  "customer_messages": 1537843,
+  "brand_messages": 1273931,
+  "unique_brands": 108,
+  "top_brands": [
+    [
+      "AmazonHelp",
+      169840
+    ],
+    [
+      "AppleSupport",
+      106860
+    ],
+    [
+      "Uber_Support",
+      56270
+    ],
+    [
+      "SpotifyCares",
+      43265
+    ],
+    [
+      "Delta",
+      42253
+    ],
+    [
+      "Tesco",
+      38573
+    ],
+    [
+      "AmericanAir",
+      36764
+    ],
+    [
+      "TMobileHelp",
+      34317
+    ],
+    [
+      "comcastcares",
+      33031
+    ],
+    [
+      "British_Airways",
+      29361
+    ],
+    [
+      "SouthwestAir",
+      28977
+    ],
+    [
+      "VirginTrains",
+      27817
+    ],
+    [
+      "Ask_Spectrum",
+      25860
+    ],
+    [
+      "XboxSupport",
+      24557
+    ],
+    [
+      "sprintcare",
+      22381
+    ],
+    [
+      "hulu_support",
+      21872
+    ],
+    [
+      "sainsburys",
+      19466
+    ],
+    [
+      "GWRHelp",
+      19364
+    ],
+    [
+      "AskPlayStation",
+      19098
+    ],
+    [
+      "ChipotleTweets",
+      18749
+    ]
+  ]
+}
