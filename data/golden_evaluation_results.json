@@ -336,24 +336,27 @@
     "mrr": 0.6491
   },
   "reply_quality_judge": {
-    "correctness": 4.78,
-    "groundedness": 4.89,
-    "relevance": 4.78,
-    "helpfulness": 4.95,
+    "correctness": 3.91,
+    "groundedness": 4.13,
+    "relevance": 3.91,
+    "helpfulness": 4.57,
     "safety": 5.0,
-    "overall": 4.83
+    "overall": 4.29
   },
   "safety_and_escalation": {
     "total_cases": 200,
-    "automation_rate": 0.24,
+    "automation_rate": 0.22,
+    "unsafe_auto_handling_rate": 0.0,
+    "unnecessary_escalation_rate": 0.57,
     "false_auto_handling_rate": 0.0,
-    "false_escalation_rate": 0.55,
-    "escalation_precision": 0.2763,
+    "false_escalation_rate": 0.57,
+    "escalation_precision": 0.2692,
     "escalation_recall": 1.0,
     "confusion_matrix": {
       "true_escalations": 42,
-      "false_escalations": 110,
-      "safe_auto_handled": 48,
+      "unnecessary_escalations": 114,
+      "false_escalations": 114,
+      "safe_auto_handled": 44,
       "unsafe_auto_handled": 0
     }
   },
@@ -397,7 +400,7 @@
   "top_5_discovered_failure_modes": [
     {
       "failure_mode": "Over-conservative Safety Gating on Valid Inquiry",
-      "frequency": 110,
+      "frequency": 114,
       "real_customer_example": "Thanks for sending me an \"inspected\" used 3 ring binder..with a broken 3rd ring. Really nice.",
       "agent_prediction": "OTHER",
       "expected_intent": "DAMAGED_OR_DEFECTIVE_ITEM",

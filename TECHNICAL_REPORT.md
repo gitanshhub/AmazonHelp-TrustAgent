@@ -15,7 +15,7 @@
 In enterprise customer support, inbound inquiries span a wide risk continuum. Routine queries (e.g., carrier tracking links, general return window questions) are highly repetitive, structured, and safe to automate. In contrast, high-stakes inquiries (e.g., unauthorized credit card charges, account compromise, lost high-value deliveries, disputed refunds) carry direct financial, legal, and reputational liabilities.
 
 An unconstrained generative LLM deployed on raw customer queries suffers from two fatal vulnerabilities:
-1. **Uncalibrated Hallucination**: Generating plausible yet completely fabricated promises (e.g., *"I have processed a full refund to your card"*), creating enforceable corporate liability.
+1. **Fabricated Hallucination**: Generating plausible yet completely fabricated promises (e.g., *"I have processed a full refund to your card"*), creating enforceable corporate liability.
 2. **Failure to Recognize Operational Boundaries**: Attempting autonomous handling of security, fraud, or billing disputes without human authorization, leaving customers vulnerable.
 
 ### Asymmetric Error Costs
@@ -48,7 +48,7 @@ flowchart TD
 1. **Text Normalizer (`src/preprocessing/cleaner.py`)**: Strips Twitter handle noise, normalizes URLs to `[LINK]`, strips historical agent signatures (`^JD`, `/SW`), and cleans conversational whitespace.
 2. **Retrieval-Augmented Classifier (`src/intents/classifier.py`)**: Computes dense 384-dimensional embeddings (`sentence-transformers/all-MiniLM-L6-v2`) and performs distance-weighted k-NN voting across 8,399 indexed training cases. Evaluates confidence $C = 0.6 \cdot S_{\text{top}} + 0.4 \cdot R_{\text{consensus}}$.
 3. **FAISS Precedent Knowledge Base (`src/retrieval/index.py`)**: Performs exact inner-product vector search (`IndexFlatIP`) over historical AmazonHelp agent resolutions to retrieve verified historical precedents.
-4. **Anti-Hallucination Responder (`src/generation/responder.py`)**: Synthesizes responses strictly grounded in the retrieved precedents. Forbids unauthorized commitments (e.g., claiming refunds have been credited).
+4. **Precedent-Grounded Responder (`src/generation/responder.py`)**: Retrieves and adapts the highest-similarity verified historical resolution as the primary response source. When sufficient precedent evidence is unavailable, it uses conservative fallback guidance rather than inventing unsupported actions or promises.
 5. **Multi-Signal Trust Gate (`src/escalation/policy.py`)**: Evaluates a four-factor conjunction before permitting automated reply:
    $$\text{Decision} = \begin{cases} \text{AUTO}, & \text{if } C \ge 0.75 \land S_{\text{top}} \ge 0.62 \land \text{Risk} \in \{\text{LOW}, \text{MEDIUM}\} \land \neg \text{Hallucination} \\ \text{ESCALATE}, & \text{otherwise} \end{cases}$$
 
@@ -75,7 +75,7 @@ Using `src/ingestion/conversation_builder.py`, we recursively traversed parent t
 Data partitioning was performed strictly at the **conversation ID level** to prevent conversational leakage:
 - **Train Partition ($N=8,399$)**: Used exclusively for classifier training and FAISS knowledge-base construction.
 - **Validation Partition ($N=1,801$)**: Used exclusively for hyperparameter tuning and safety threshold selection ($\tau = 0.75$).
-- **Unseen Test Partition ($N=1,800$)**: Held-out random split reserved exclusively for uncalibrated and selective evaluation.
+- **Unseen Test Partition ($N=1,800$)**: Held-out random split reserved exclusively for unbiased and selective evaluation.
 - **Golden Evaluation Set ($N=200$)**: A dedicated, hand-reviewed evaluation benchmark. **The Golden Set was completely isolated from model training, vector indexing, and threshold tuning.**
 
 ### Golden Set Sampling & Labelling Methodology
@@ -111,7 +111,7 @@ Standard classification metrics fail when evaluating systems with an option to a
    $$\text{Escalation Recall} = \frac{N_{\text{escalate} \cap \text{unsafe}}}{N_{\text{unsafe}}}$$
 5. **Unnecessary Escalation Rate**: Proportion of all inquiries that were routine and auto-eligible but deferred to human agents due to conservative thresholding:
    $$\text{Unnecessary Escalation Rate} = \frac{N_{\text{routine} \cap \text{escalate}}}{N_{\text{total}}}$$
-6. **Unsupported Claim Rate**: Proportion of generated responses containing $\ge 1$ unsupported commitment, detected via deterministic regex rules for unauthorized claims (e.g., claiming refunds credited) paired with LLM Judge Groundedness $< 3$:
+6. **Unsupported Claim Rate**: Proportion of generated responses containing $\ge 1$ unsupported commitment, flagged by the deterministic groundedness/safety validator. (The LLM judge is evaluated separately as a multi-dimensional response-quality assessor and is not part of the hard Trust Gate):
    $$\text{Unsupported Claim Rate} = \frac{N_{\text{unsupported}}}{N_{\text{total evaluated}}}$$
 7. **Precedent Retrieval (Recall@k)**: Proportion of queries where a historically verified precedent with the matching intent appears within the top-$k$ FAISS candidates:
    $$\text{Recall@k} = \frac{\sum_{i=1}^{N} \mathbb{I}(\text{intent} \in \{\text{retrieved}_{1..k}\})}{N}$$
@@ -135,7 +135,7 @@ We benchmark our production architecture against two established baselines:
 | **Production Retrieval-Augmented** | Dense Embedding k-NN | **68.44%** | 53.50% | 0.5087 | 0.5270 |
 
 ### Macro F1 Trade-off Analysis
-While TF-IDF achieved a higher Macro F1 on the adversarial Golden Set (0.6308 vs. 0.5087), its sparse keyword matching produced uncalibrated probabilities that cannot distinguish confidence boundaries. The Retrieval-Augmented model improved overall test accuracy on the full 1,800 test set (68.44% vs. 65.67%) and provided well-calibrated distance metrics essential for abstention gating. However, its gains were concentrated in higher-frequency intents, trading off rare-class macro balance for overall precision.
+While TF-IDF achieved a higher Macro F1 on the adversarial Golden Set (0.6308 vs. 0.5087), its sparse keyword matching produced heuristic probabilities that cannot distinguish fine-grained semantic boundaries. The Retrieval-Augmented model improved overall test accuracy on the full 1,800 test set (68.44% vs. 65.67%) and provided reliable distance-based metrics essential for abstention gating. However, its gains were concentrated in higher-frequency intents, trading off rare-class macro balance for overall precision.
 
 ---
 

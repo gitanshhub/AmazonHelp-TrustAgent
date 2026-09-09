@@ -228,15 +228,18 @@
   },
   "trust_gate_safety": {
     "total_cases": 1800,
-    "automation_rate": 0.1739,
+    "automation_rate": 0.1644,
+    "unsafe_auto_handling_rate": 0.0022,
+    "unnecessary_escalation_rate": 0.3117,
     "false_auto_handling_rate": 0.0022,
-    "false_escalation_rate": 0.3022,
-    "escalation_precision": 0.6342,
+    "false_escalation_rate": 0.3117,
+    "escalation_precision": 0.627,
     "escalation_recall": 0.9958,
     "confusion_matrix": {
       "true_escalations": 943,
-      "false_escalations": 544,
-      "safe_auto_handled": 309,
+      "unnecessary_escalations": 561,
+      "false_escalations": 561,
+      "safe_auto_handled": 292,
       "unsafe_auto_handled": 4
     }
   },
@@ -280,10 +283,10 @@
   ],
   "escalation_reason_codes": {
     "LOW_CONFIDENCE": 1348,
-    "CONFIDENT_GROUNDED": 313,
+    "CONFIDENT_GROUNDED": 296,
     "HIGH_RISK": 84,
     "ACCOUNT_SPECIFIC_ACTION": 29,
-    "PAYMENT_DISPUTE": 17,
-    "NO_SIMILAR_CASE": 9
+    "NO_SIMILAR_CASE": 26,
+    "PAYMENT_DISPUTE": 17
   }
 }

@@ -54,7 +54,7 @@ This log documents **15 key engineering decisions, rationales, alternatives cons
 
 ### Decision 7: FAISS `IndexFlatIP` Vector Index
 - **Decision**: Implemented exact inner-product search (`IndexFlatIP`) on L2-normalized embeddings.
-- **Why**: For 8,399 support cases, exact cosine similarity search takes < 1ms on CPU and guarantees 100% recall without approximation loss.
+- **Why**: For 8,399 support cases, exact cosine similarity search takes < 1ms on CPU and provides exact nearest-neighbor search without approximation-induced recall loss (distinct from task-level Precedent Recall@5 of 89.78%, which measures whether the retrieved cases contain the correct intent precedent).
 - **Alternative Considered**: Approximate Nearest Neighbor (ANN) index like `IndexHNSWFlat` or `IndexIVFFlat`.
 - **Trade-Off**: Does not scale to 10M+ vectors without clustering/quantization, but is mathematically optimal for the 10,000-case enterprise regime.
 
@@ -62,7 +62,7 @@ This log documents **15 key engineering decisions, rationales, alternatives cons
 
 ### Decision 8: Retrieval-Augmented k-NN Intent Classification
 - **Decision**: Built the production intent classifier using distance-weighted k-NN voting ($k=5$) over labeled training embeddings.
-- **Why**: Naturally outputs a calibrated confidence score derived from neighborhood consensus and top-1 cosine similarity ($0.6 \cdot S_{top} + 0.4 \cdot R_{consensus}$), avoiding the uncalibrated overconfidence common in softmax neural networks.
+- **Why**: Naturally outputs a retrieval-derived confidence score derived from neighborhood consensus and top-1 cosine similarity ($0.6 \cdot S_{top} + 0.4 \cdot R_{consensus}$), avoiding the arbitrary overconfidence common in softmax neural networks.
 - **Alternative Considered**: Fine-tuned BERT sequence classification or zero-shot LLM prompting.
 - **Trade-Off**: Inference scales with training set size (mitigated by FAISS indexing), but offers complete interpretability via nearest neighbors.
 
@@ -110,14 +110,14 @@ This log documents **15 key engineering decisions, rationales, alternatives cons
 
 ### Decision 14: Independent Human Validation Protocol
 - **Decision**: Sampled 50 representative validation cases across all sampling groups **before** seeing any judge scores, exported a review template (`data/judge_human_review.csv`), and computed Exact Match, Agreement within $\pm 1$, Spearman $\rho$, and Cohen's $\kappa$.
-- **Why**: Eliminates selection bias in judge validation. Proves whether the LLM judge is calibrated against human standards before trusting its scores.
+- **Why**: Eliminates selection bias in judge validation. Proves whether the LLM judge aligns with human evaluation standards before trusting its scores.
 - **Alternative Considered**: Evaluating human scores only on cases where the judge was confident.
 - **Trade-Off**: Exposes genuine human-judge variance (overall exact match 56.5%, within $\pm 1$ point 100%), but provides honest, unmanipulated scientific evidence.
 
 ---
 
 ### Decision 15: Selective Prediction (Accuracy over Coverage)
-- **Decision**: Calibrated the default Trust Gate threshold to **0.75 confidence** using the 1,801-case validation partition, yielding **17.9% automation coverage** with **90.7% selective accuracy** on the 1,800 unseen test set, and **24.5% coverage** with **85.7% selective accuracy** on the 200 hard Golden set.
+- **Decision**: Tuned the default Trust Gate threshold to **0.75 confidence** using the 1,801-case validation partition, yielding **17.9% automation coverage** with **90.7% selective accuracy** on the 1,800 unseen test set, and **24.5% coverage** with **85.7% selective accuracy** on the 200 hard Golden set.
 - **Why**: An autonomous support agent must prioritize precision over raw deflection. A 90% accurate bot that answers 18% of inquiries safely is infinitely more valuable to an enterprise than a 68% accurate bot that attempts 100% of inquiries and misinforms one out of three customers.
 - **Alternative Considered**: Optimizing for maximum coverage (e.g. threshold 0.50 with 51% coverage but 59% accuracy).
 - **Trade-Off**: Human agents must still handle ~82% of inquiries, but the business guarantees zero catastrophic automated blunders on critical customer interactions.

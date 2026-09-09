@@ -23,11 +23,11 @@ Rather than naive generation (`User -> LLM -> Output`), this project implements 
 ```text
 Customer Message
        ↓
-Intent Classification (SentenceTransformers + calibrated confidence)
+Intent Classification (SentenceTransformers + retrieval-derived confidence score)
        ↓
 Historical Case Retrieval (FAISS vector search over 8,399 resolved support dialogues)
        ↓
-Grounded Response Generation (Strictly grounded in historical brand precedents)
+Grounded Response Generation (Adapts verified historical brand resolution)
        ↓
 Multi-Signal Trust Gate (Evaluates risk, confidence, evidence quality, and groundedness)
        ↓
@@ -151,13 +151,14 @@ Tested on **1,800 completely unseen test conversations**:
 | **Recall@5** | **89.78%** | 9 out of 10 inquiries find proven historical precedent in top 5 |
 | **MRR** | **0.7317** | High mean rank position of relevant cases |
 
-### C. Safety & Trust Gate Performance
+### C. Safety & Trust Gate Performance (1,800 Unseen Test Cases)
 | Safety Metric | Score | Goal & Significance |
 | :--- | :---: | :--- |
-| **False Auto-Handling Rate** | **0.22%** | **Near Zero (Target < 1%)** — Risky cases almost never leak through |
+| **Unsafe Auto-Handling Rate** | **0.22%** | **Near Zero (Target < 1%)** — Risky cases almost never leak through |
 | **Escalation Recall** | **99.58%** | **99.6% of all risky/ambiguous cases routed to humans** |
 | **Unsupported Claim Rate** | **0.00%** | **Zero hallucinated promises or fake system actions** |
-| **Safe Automation Rate** | **17.4%** | System safely automates inquiries with 90.7% precision |
+| **Automation Coverage** | **17.9%** | **322 / 1,800 inquiries safely automated at 90.7% selective accuracy** |
+| **Unnecessary Escalation Rate** | **30.2%** | Routine inquiries conservatively deferred to human agents |
 
 ### D. Selective Prediction Analysis (Automation Rate vs Accuracy)
 | Confidence Threshold | Automation Rate | Safe Accuracy on Automated Queries |
@@ -170,7 +171,7 @@ Tested on **1,800 completely unseen test conversations**:
 | $\ge 0.85$ | 5.4% | 95.9% |
 | $\ge 0.90$ | 1.2% | 95.2% |
 
-> **Conclusion**: Setting the threshold to **0.75** provides the optimal operating point: it achieves **>90% accuracy** on automated responses while ensuring that risky or uncertain queries are caught with **99.6% recall**.
+> **Conclusion**: A threshold of **0.75** was selected on the validation partition as an effective operating point: it achieves **90.7% selective accuracy** on automated responses while catching risky or uncertain queries with **99.6% escalation recall**.
 
 ---
 

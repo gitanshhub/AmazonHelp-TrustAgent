@@ -2,8 +2,8 @@
 src/intents/classifier.py
 Implements Intent Classification models:
 1. Baseline: TF-IDF + Logistic Regression with probability estimation.
-2. Production: Retrieval-Augmented k-NN Classifier using SentenceTransformer embeddings
-   and weighted neighborhood cosine similarity for well-calibrated confidence estimation.
+2. Production: Retrieval-Augmented k-NN Classifier using   SentenceTransformers embeddings, an exact FAISS IndexFlatIP knowledge base,
+   and weighted neighborhood cosine similarity for retrieval-derived confidence estimation.
 """
 
 import os
@@ -53,7 +53,7 @@ class RetrievalAugmentedClassifier:
     Final Approach: Retrieval-assisted Intent Classification.
     Embeds incoming message using SentenceTransformer and performs distance-weighted
     k-Nearest Neighbor intent voting over historical labeled train cases.
-    Computes calibrated confidence score based on top neighbor consensus and cosine similarity.
+    Computes retrieval-derived confidence score based on top neighbor consensus and cosine similarity.
     """
     def __init__(self, model_name: str = "sentence-transformers/all-MiniLM-L6-v2", k: int = 5):
         self.model_name = model_name
