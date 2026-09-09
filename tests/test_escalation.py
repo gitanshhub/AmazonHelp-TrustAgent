@@ -105,3 +105,20 @@ def test_escalate_unsupported_claims(policy):
     )
     assert decision["action"] == "ESCALATE"
     assert decision["reason_code"] == "CONFLICTING_EVIDENCE"
+
+def test_escalate_insufficient_evidence_depth(policy):
+    """High similarity with has_strong_evidence=False should trigger ESCALATE due to evidence depth."""
+    retrieval_data = {
+        "cases": [{"case_id": "c1", "similarity": 0.82, "intent": "ORDER_TRACKING_STATUS"}],
+        "top_similarity": 0.82,
+        "has_strong_evidence": False
+    }
+    decision = policy.evaluate(
+        intent="ORDER_TRACKING_STATUS",
+        confidence=0.92,
+        retrieval_data=retrieval_data,
+        unsupported_claims_detected=False
+    )
+    assert decision["action"] == "ESCALATE"
+    assert decision["reason_code"] == "NO_SIMILAR_CASE"
+

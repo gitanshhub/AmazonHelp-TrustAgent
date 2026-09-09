@@ -59,3 +59,5 @@ def test_judge_output_schema():
     assert "justification" in res
     assert isinstance(res["justification"], str)
     assert len(res["justification"]) > 5
+    assert "judge_type" in res
+    assert res["judge_type"] in ["llm", "heuristic_fallback"]

@@ -1,6 +1,7 @@
 """
 src/generation/responder.py
 Grounded response generator strictly adhering to historical brand resolutions.
+Prioritizes historically retrieved precedents over static templates.
 Enforces anti-hallucination policies: prohibits fake backend actions, invented refunds, or false claims.
 """
 
@@ -15,18 +16,18 @@ FORBIDDEN_PROMISE_PATTERNS = [
     re.compile(r'\b(we have issued a full refund of \$\d+)\b', re.IGNORECASE),
 ]
 
-# Standard grounded response templates adapted from historical AmazonHelp resolutions
-GROUNDED_INTENT_TEMPLATES = {
-    "ORDER_TRACKING_STATUS": "I'd be glad to help check on your shipment. You can track real-time carrier updates directly under 'Your Orders' here: [LINK]. If tracking shows no movement for 48 hours, please send us a DM with your order details so we can investigate.",
-    "DELIVERY_DELAY": "We're sorry for the delay in receiving your package. Shipments may occasionally experience transit delays due to carrier volume. Please check your tracking link for the revised delivery window: [LINK]. If it has not arrived within 24 hours of the revised date, reach out via DM so our team can assist.",
-    "PACKAGE_DELIVERED_NOT_RECEIVED": "We understand how concerning it is when tracking shows delivered but the parcel isn't there. Carriers occasionally mark items delivered a few hours early or place them in secure porch/neighbor areas. Please check around your delivery location and with neighbors. If it still hasn't turned up by end of day tomorrow, send us a DM with your order number.",
-    "DAMAGED_OR_DEFECTIVE_ITEM": "We're very sorry to hear your item arrived in that condition. You can request a free replacement or return label directly through our Online Returns Center at [LINK]. Select your order and choose 'Item arrived damaged'. If you run into any trouble, please let us know!",
-    "WRONG_ITEM_RECEIVED": "We apologize for the mix-up with your order! You can arrange an immediate return and replacement through 'Your Orders' at [LINK] by selecting 'Wrong item sent'. Our team will ship the correct item promptly once initiated.",
-    "REFUND_NOT_RECEIVED": "We understand you're waiting for your refund. Refunds typically take 3-5 business days to post to your original payment method once processed by our fulfillment center. You can view the exact refund status under your order invoice: [LINK].",
-    "RETURN_EXCHANGE_INQUIRY": "Returning or exchanging an item is straightforward. Visit our Returns Center at [LINK], select the item, and print your prepaid return shipping label or choose a QR code drop-off location. Return windows are typically 30 days from delivery.",
-    "CANCELLATION_REQUEST": "You can request to cancel an order directly from 'Your Orders' at [LINK] as long as it has not entered the shipping process. If the order has already dispatched, you can simply refuse the delivery or return it once it arrives for a full refund.",
-    "PRIME_MEMBERSHIP_INQUIRY": "For inquiries regarding Amazon Prime membership, benefits, or subscription management, you can review and manage your settings anytime under 'Manage Prime Membership' at [LINK].",
-    "DIGITAL_SERVICES_AND_DEVICE": "For digital streaming or device issues, we recommend restarting your device, ensuring the app is updated to the latest version, and verifying your network connection. Detailed troubleshooting steps are available at our Help Center: [LINK]."
+# Conservative fallback guidance used only when no relevant historical precedent exists
+CONSERVATIVE_FALLBACK_TEMPLATES = {
+    "ORDER_TRACKING_STATUS": "You can check real-time carrier tracking and transit updates directly under 'Your Orders' here: [LINK]. If tracking shows no movement, please reach out with your order details so our team can investigate.",
+    "DELIVERY_DELAY": "We apologize for the delivery delay. Carrier updates and revised delivery estimates can be reviewed via your tracking link: [LINK]. If your parcel does not arrive within the revised window, please contact support for further assistance.",
+    "PACKAGE_DELIVERED_NOT_RECEIVED": "If your tracking indicates delivered but the parcel has not arrived, carriers occasionally mark packages early or place them in secure areas nearby. Please check around your delivery location. If it has not arrived by tomorrow, please contact support with your order number.",
+    "DAMAGED_OR_DEFECTIVE_ITEM": "We are very sorry your item arrived damaged. You can initiate a replacement or return request directly through our Online Returns Center at [LINK].",
+    "WRONG_ITEM_RECEIVED": "We apologize for the incorrect item. You can arrange a return and replacement through 'Your Orders' at [LINK] by selecting 'Wrong item sent'.",
+    "REFUND_NOT_RECEIVED": "Refund status and processing timelines can be reviewed directly under your order invoice and payment details at [LINK].",
+    "RETURN_EXCHANGE_INQUIRY": "To review return eligibility and generate a return shipping label or QR drop-off code, please visit our Returns Center at [LINK].",
+    "CANCELLATION_REQUEST": "Order cancellation requests can be submitted through 'Your Orders' at [LINK] if the order has not yet entered dispatch. Once dispatched, you may return the item upon arrival.",
+    "PRIME_MEMBERSHIP_INQUIRY": "For inquiries regarding Amazon Prime membership, benefits, or billing settings, you can manage your membership preferences at [LINK].",
+    "DIGITAL_SERVICES_AND_DEVICE": "For digital services and device support, please verify your network connection, ensure your app is updated to the latest version, or consult our Digital Services Help Center at [LINK]."
 }
 
 class GroundedResponder:
@@ -51,24 +52,46 @@ class GroundedResponder:
         confidence: float
     ) -> Dict[str, Any]:
         """
-        Synthesizes a brand-consistent grounded response.
-        If strong historical precedent exists, aligns with the proven resolution.
+        Synthesizes a precedent-grounded response.
+        PRIMARY: Grounded directly in the top retrieved historical precedent resolution.
+        FALLBACK: Used ONLY when no relevant historical precedent exists.
         """
-        # Select best template or historical resolution reference
-        if intent in GROUNDED_INTENT_TEMPLATES:
-            draft = GROUNDED_INTENT_TEMPLATES[intent]
-        elif retrieved_cases and retrieved_cases[0]["similarity"] >= 0.70:
-            # Adapt the historically proven response
-            hist_resolution = retrieved_cases[0]["brand_resolution"]
-            draft = f"Thanks for reaching out. Based on our support guidelines: {hist_resolution}"
-        else:
-            draft = "Thank you for contacting customer support. We want to ensure this is handled properly. Please DM us your order details or reach out to our support team at [LINK] so a specialist can assist you."
+        draft: Optional[str] = None
+        source_type: str = "fallback_escalation"
+        source_case_ids: List[str] = []
+        top_sim: float = 0.0
 
+        # 1. Primary Grounding: Extract and adapt top retrieved historical precedent
+        if retrieved_cases and len(retrieved_cases) > 0:
+            top_case = retrieved_cases[0]
+            top_sim = float(top_case.get("similarity", 0.0))
+            hist_resolution = str(top_case.get("brand_resolution", "")).strip()
+            case_id = str(top_case.get("case_id", top_case.get("conversation_id", "")))
+
+            # Use historical resolution if similarity is sufficient and text is non-trivial
+            if top_sim >= 0.55 and len(hist_resolution) > 15:
+                draft = hist_resolution
+                source_type = "retrieved_historical_case"
+                if case_id:
+                    source_case_ids = [case_id]
+
+        # 2. Fallback: Used only when no usable historical precedent exists
+        if not draft:
+            if intent in CONSERVATIVE_FALLBACK_TEMPLATES:
+                draft = CONSERVATIVE_FALLBACK_TEMPLATES[intent]
+                source_type = "conservative_fallback_template"
+            else:
+                draft = "Thank you for contacting support. To ensure your request is handled securely, please reach out with your order details at [LINK] so a specialist can assist you."
+                source_type = "fallback_escalation"
+
+        # 3. Post-generation Groundedness & Anti-Hallucination Validation
         is_grounded = self.validate_groundedness(draft)
-        
+
         return {
             "text": draft,
             "is_grounded": is_grounded,
             "brand": self.brand_name,
-            "source": "grounded_template" if intent in GROUNDED_INTENT_TEMPLATES else "retrieved_historical_case"
+            "source": source_type,
+            "source_case_ids": source_case_ids,
+            "grounding_similarity": round(top_sim, 4)
         }

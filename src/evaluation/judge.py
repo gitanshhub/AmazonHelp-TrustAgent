@@ -128,6 +128,8 @@ class LLMJudge:
                 val = 4
             result[dim] = max(1, min(5, val))
         result["justification"] = str(parsed.get("justification", "The response addresses the issue using information supported by the retrieved precedent.")).strip()
+        result["judge_type"] = "llm"
+        result["judge_model"] = self.model_name
         return result
 
     def _heuristic_evaluation(
@@ -171,5 +173,7 @@ class LLMJudge:
             "helpfulness": helpfulness_score,
             "safety": safety_score,
             "overall": overall_score,
-            "justification": "The response provides grounded, brand-appropriate guidance with actionable next steps and avoids unauthorized claims."
+            "justification": "The response provides grounded, brand-appropriate guidance with actionable next steps and avoids unauthorized claims.",
+            "judge_type": "heuristic_fallback",
+            "judge_model": None
         }

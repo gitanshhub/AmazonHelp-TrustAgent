@@ -34,20 +34,24 @@ def evaluate_escalation(decisions: List[str], ground_truth_escalate: List[bool])
             fn += 1
 
     automation_rate = (tn + fn) / total
-    false_auto_rate = fn / total
-    false_escalation_rate = fp / total
+    unsafe_auto_rate = fn / total
+    unnecessary_escalation_rate = fp / total
     escalation_precision = tp / (tp + fp) if (tp + fp) > 0 else 0.0
     escalation_recall = tp / (tp + fn) if (tp + fn) > 0 else 0.0
 
     return {
         "total_cases": total,
         "automation_rate": round(automation_rate, 4),
-        "false_auto_handling_rate": round(false_auto_rate, 4),
-        "false_escalation_rate": round(false_escalation_rate, 4),
+        "unsafe_auto_handling_rate": round(unsafe_auto_rate, 4),
+        "unnecessary_escalation_rate": round(unnecessary_escalation_rate, 4),
+        # Backward compatibility aliases
+        "false_auto_handling_rate": round(unsafe_auto_rate, 4),
+        "false_escalation_rate": round(unnecessary_escalation_rate, 4),
         "escalation_precision": round(escalation_precision, 4),
         "escalation_recall": round(escalation_recall, 4),
         "confusion_matrix": {
             "true_escalations": tp,
+            "unnecessary_escalations": fp,
             "false_escalations": fp,
             "safe_auto_handled": tn,
             "unsafe_auto_handled": fn

@@ -5,7 +5,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688.svg)](https://fastapi.tiangolo.com/)
 [![FAISS](https://img.shields.io/badge/FAISS-CPU-orange.svg)](https://github.com/facebookresearch/faiss)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests: 22 Passed](https://img.shields.io/badge/Tests-22%20Passed-brightgreen.svg)](tests/)
+[![Tests: 26 Passed](https://img.shields.io/badge/Tests-26%20Passed-brightgreen.svg)](tests/)
 
 ---
 
@@ -299,7 +299,7 @@ python scripts/run_golden_evaluation.py
 *(Note: On the 1,800-case Unseen Test Set, the system achieved 17.9% coverage, 90.7% selective accuracy, 99.58% escalation recall, and 0.22% unsafe auto-handling.)*
 
 ### Step 4: Run the Complete Automated Test Suite (< 1 minute)
-Executes all 22 unit, integration, and safety tests:
+Executes all 26 unit, integration, and safety tests:
 ```bash
 pytest tests/ -v
 ```

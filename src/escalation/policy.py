@@ -78,17 +78,25 @@ class TrustGatePolicy:
             }
         audit_trail.append({"check": "Classification Confidence", "status": "PASS", "detail": f"Confidence {confidence:.2f} satisfies >= {self.confidence_threshold:.2f}."})
 
-        # 3. Check: Historical Retrieval Relevance & Evidence
-        retrieval_passed = top_similarity >= self.similarity_threshold and len(cases) > 0
+        # 3. Check: Historical Retrieval Relevance & Evidence Depth
+        retrieval_passed = (
+            top_similarity >= self.similarity_threshold 
+            and len(cases) > 0 
+            and has_strong_evidence
+        )
         if not retrieval_passed:
-            audit_trail.append({"check": "Historical Case Evidence", "status": "FAIL", "detail": f"Top similarity {top_similarity:.2f} is below relevance threshold {self.similarity_threshold:.2f}."})
+            if not has_strong_evidence and top_similarity >= self.similarity_threshold:
+                detail_msg = f"Top similarity ({top_similarity:.2f}) passed threshold, but precedent evidence depth was insufficient."
+            else:
+                detail_msg = f"Top similarity {top_similarity:.2f} is below relevance threshold {self.similarity_threshold:.2f}."
+            audit_trail.append({"check": "Historical Case Evidence", "status": "FAIL", "detail": detail_msg})
             return {
                 "action": "ESCALATE",
                 "reason_code": "NO_SIMILAR_CASE",
-                "reason": "No historically verified precedent with sufficient similarity was found to ground the response.",
+                "reason": "No historically verified precedent with sufficient similarity and evidence depth was found to ground the response.",
                 "audit_trail": audit_trail
             }
-        audit_trail.append({"check": "Historical Case Evidence", "status": "PASS", "detail": f"Found {len(cases)} similar historical cases (top similarity: {top_similarity:.2f})."})
+        audit_trail.append({"check": "Historical Case Evidence", "status": "PASS", "detail": f"Verified strong evidence: {len(cases)} cases retrieved (top similarity: {top_similarity:.2f})."})
 
         # 4. Check: Unsupported Claims / Hallucination Detection
         if unsupported_claims_detected:
