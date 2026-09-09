@@ -148,11 +148,13 @@ async function loadMetrics() {
     const data = await res.json();
     if (data.intent_classification) {
       document.getElementById("metric-macro-f1").textContent = 
-        `${(data.intent_classification.production_retrieval.macro_f1 * 100).toFixed(1)}%`;
+        `${(data.intent_classification.production_retrieval.accuracy * 100).toFixed(1)}%`;
       document.getElementById("metric-recall").textContent = 
         `${(data.retrieval.recall_at_5 * 100).toFixed(1)}%`;
+      const unsafeRate = data.trust_gate_safety.unsafe_auto_handling_rate !== undefined ? 
+        data.trust_gate_safety.unsafe_auto_handling_rate : data.trust_gate_safety.false_auto_handling_rate;
       document.getElementById("metric-false-auto").textContent = 
-        `${(data.trust_gate_safety.false_auto_handling_rate * 100).toFixed(2)}%`;
+        `${(unsafeRate * 100).toFixed(2)}%`;
       document.getElementById("metric-automation").textContent = 
         `${(data.trust_gate_safety.automation_rate * 100).toFixed(1)}%`;
     }

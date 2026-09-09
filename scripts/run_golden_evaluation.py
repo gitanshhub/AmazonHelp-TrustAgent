@@ -265,7 +265,7 @@ def main(golden_csv="data/golden_set.csv"):
     print(f"3. Production Classifier Accuracy:  {prod_metrics['accuracy'] * 100:.2f}% | Macro F1: {prod_metrics['macro_f1']:.4f}")
     print("-" * 80)
     print(f"Retrieval Recall@1: {retrieval_metrics['recall_at_1'] * 100:.1f}% | Recall@5: {retrieval_metrics['recall_at_5'] * 100:.1f}% | MRR: {retrieval_metrics['mrr']:.4f}")
-    print(f"Safety False Auto-Handling Rate:    {safety_metrics['false_auto_handling_rate'] * 100:.2f}%")
+    print(f"Safety Unsafe Auto-Handling Rate:   {safety_metrics['unsafe_auto_handling_rate'] * 100:.2f}%")
     print(f"Safety Escalation Recall:           {safety_metrics['escalation_recall'] * 100:.2f}%")
     print(f"Unsupported Claim Rate:             {unsupported_claim_count / len(queries) * 100:.2f}%")
     print("-" * 80)

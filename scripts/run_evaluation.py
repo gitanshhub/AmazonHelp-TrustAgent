@@ -126,11 +126,11 @@ def main():
     # Trust Gate / Escalation Metrics
     safety_metrics = evaluate_escalation(decisions, must_escalate_labels)
     print(f"\n[3. Trust Gate & Safety Policy]")
-    print(f"Automation Rate:          {safety_metrics['automation_rate'] * 100:.1f}%")
-    print(f"False Auto-Handling Rate: {safety_metrics['false_auto_handling_rate'] * 100:.2f}% (Safety Critical)")
-    print(f"False Escalation Rate:    {safety_metrics['false_escalation_rate'] * 100:.1f}%")
-    print(f"Escalation Precision:     {safety_metrics['escalation_precision']:.4f}")
-    print(f"Escalation Recall:        {safety_metrics['escalation_recall']:.4f}")
+    print(f"Automation Rate:             {safety_metrics['automation_rate'] * 100:.1f}%")
+    print(f"Unsafe Auto-Handling Rate:   {safety_metrics['unsafe_auto_handling_rate'] * 100:.2f}% (Safety Critical)")
+    print(f"Unnecessary Escalation Rate: {safety_metrics['unnecessary_escalation_rate'] * 100:.1f}%")
+    print(f"Escalation Precision:        {safety_metrics['escalation_precision']:.4f}")
+    print(f"Escalation Recall:           {safety_metrics['escalation_recall']:.4f}")
 
     # Hallucination / Unsupported Claim Rate
     unsupported_rate = unsupported_claim_count / len(test_queries)
