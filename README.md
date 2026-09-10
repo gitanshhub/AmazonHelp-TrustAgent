@@ -156,7 +156,7 @@ Tested on **1,800 completely unseen test conversations**:
 | :--- | :---: | :--- |
 | **Unsafe Auto-Handling Rate** | **0.22%** | **Near Zero (Target < 1%)** — Risky cases almost never leak through |
 | **Escalation Recall** | **99.58%** | **99.6% of all risky/ambiguous cases routed to humans** |
-| **Unsupported Claim Rate** | **0.00%** | **Zero hallucinated promises or fake system actions** |
+| **Unsupported Claim Rate** | **0.00%** | **Under deterministic evaluation protocol (prohibits fabricated actions/commitments)** |
 | **Automation Coverage** | **17.9%** | **322 / 1,800 inquiries safely automated at 90.7% selective accuracy** |
 | **Unnecessary Escalation Rate** | **30.2%** | Routine inquiries conservatively deferred to human agents |
 
@@ -293,7 +293,7 @@ python scripts/run_golden_evaluation.py
 *Key Benchmark Results (Hard Golden Set, N=200)*:
 - **Unsafe Auto-Handling Rate**: **0.00%** (Zero dangerous/disputed issues auto-handled)
 - **Escalation Recall**: **100.00%** (All 42 high-risk and fraud cases caught)
-- **Unsupported Claim Rate**: **0.00%**
+- **Unsupported Claim Rate**: **0.00%** (under deterministic evaluation protocol)
 - **Selective Accuracy on Auto Queries**: **85.7%** (operating at frozen $\tau = 0.75$)
 - **LLM Judge Safety Score**: **5.00 / 5.00**
 

@@ -162,7 +162,7 @@ Evaluated across all 200 Golden Set interactions using `Qwen/Qwen2.5-0.5B-Instru
 | **Correctness** | **4.78 / 5.00** | **83.5%** | Factual precision without false claims |
 | **Overall Quality** | **4.83 / 5.00** | **87.0%** | Comprehensive response quality |
 
-The **Unsupported Claim Rate was 0.00%** under our evaluation protocol across both evaluation sets.
+The **Unsupported Claim Rate was 0.00% under the deterministic evaluation protocol** across both evaluation sets (measuring adherence to defined guardrails prohibiting fabricated refund/account commitments, rather than implying universal hallucination absence).
 
 ### C. Safety Gate & Escalation Audit
 
@@ -214,30 +214,34 @@ The local instruction-tuned `Qwen/Qwen2.5-0.5B-Instruct` model was chosen to ena
 
 Across the 200 Golden Set cases, the system incurred **203 total failure events**, consisting of **93 intent misclassifications** (yielding 53.5% accuracy on this hard set) and **110 unnecessary escalations** (routine queries cautiously routed to humans). 
 
-**Crucially, not every intent misclassification resulted in a customer-facing safety failure.** In fact, all 93 misclassified cases were safely intercepted by the Trust Gate and escalated to humans because their neighbor consensus or similarity fell below threshold. The failure modes break down as follows:
+**Crucially, not every intent misclassification resulted in a customer-facing safety failure.** In fact, all 93 misclassified cases were safely intercepted by the Trust Gate and escalated to humans because their neighbor consensus or similarity fell below threshold. The failure events are cleanly separated into two distinct categories:
 
-### 1. Unnecessary Escalations via Over-Conservative Safety Gating ($N=110$)
+### Category A: Unnecessary Escalations via Over-Conservative Safety Gating ($N = 110$)
+Routine, auto-eligible inquiries that were cautiously routed to humans due to stylistic nuance or conservative thresholding:
 - **Customer Message**: *"Thanks for sending me an 'inspected' used 3 ring binder..with a broken 3rd ring. Really nice."*
 - **Agent Prediction**: `OTHER` (Confidence: 0.43) $\rightarrow$ Action: `ESCALATE` (Reason: `LOW_CONFIDENCE`)
 - **Expected Action**: `AUTO` (`DAMAGED_OR_DEFECTIVE_ITEM`)
 - **Root Cause**: Sarcasm (*"Really nice"*) and the word *"inspected"* split nearest neighbor similarity across multiple intents, depressing confidence below 0.75.
 - **Architectural Fix**: Add sentiment-aware contrastive tuning to recognize sarcasm without depressing domain similarity.
 
-### 2. Subtle Phrasing / Low Confidence Ambiguity ($N=67$ of 93 misclassifications)
+### Category B: Intent Misclassifications ($N = 93$, Partitioned into 3 Mutually Exclusive Modes)
+The 93 classification errors partition exactly into three mutually exclusive failure modes ($67 + 25 + 1 = 93$):
+
+#### 1. Subtle Phrasing / Low Confidence Ambiguity ($N = 67$ of 93 misclassifications)
 - **Customer Message**: *"Wow, love paying for Prime two-day shipping only for it to sit in a warehouse for 5 days."*
 - **Agent Prediction**: `PRIME_MEMBERSHIP_INQUIRY` (Confidence: 0.61) $\rightarrow$ Action: `ESCALATE`
 - **Expected Intent**: `DELIVERY_DELAY`
 - **Root Cause**: Product branding nouns (*"Prime"*) dominated logistical delay verbs in dense embedding space.
 - **Architectural Fix**: Apply token attention re-weighting toward operational verbs over brand nouns.
 
-### 3. Semantic Generalization Gap on Pre-Orders ($N=25$ of 93 misclassifications)
+#### 2. Semantic Generalization Gap on Pre-Orders ($N = 25$ of 93 misclassifications)
 - **Customer Message**: *"when are you processing pre ordered xbox one x? Mine had said shipping for yesterday but nothing happened."*
 - **Agent Prediction**: `DELIVERY_DELAY` (Confidence: 0.76) $\rightarrow$ Action: `AUTO`
 - **Expected Intent**: `ORDER_TRACKING_STATUS`
 - **Root Cause**: Customer combined pre-order release dates with carrier transit terms. While the resulting advice was safe, the classification was incorrect.
 - **Architectural Fix**: Explicitly delineate pre-order fulfillment from active carrier transit in taxonomy definitions.
 
-### 4. Compound Multi-Issue Inquiries ($N=1$ of 93 misclassifications)
+#### 3. Compound Multi-Issue Inquiries ($N = 1$ of 93 misclassifications)
 - **Customer Message**: *"I have never received this order. Never signed. How come this was delivered to the customer directly? This is fraud...I need my money back. [LINK]"*
 - **Agent Prediction**: `PACKAGE_DELIVERED_NOT_RECEIVED` (Confidence: 0.66) $\rightarrow$ Action: `ESCALATE`
 - **Expected Intent**: `UNAUTHORIZED_TRANSACTION_FRAUD`
