@@ -143,13 +143,15 @@ Tested on **1,800 completely unseen test conversations**:
 | **Baseline 1** (TF-IDF + Logistic Regression) | 65.67% | 0.5727 | 0.6690 |
 | **Production** (Retrieval-Augmented k-NN Classifier) | **68.44%** | **0.5409** | **0.6866** |
 
-### B. Historical Resolution Retrieval (FAISS)
+### B. Historical Precedent Intent Retrieval (FAISS)
 | Metric | Score | Meaning |
 | :--- | :---: | :--- |
-| **Recall@1** | 62.67% | Exact top match has relevant intent precedent |
-| **Recall@3** | 82.83% | Relevant precedent present in top 3 results |
-| **Recall@5** | **89.78%** | 9 out of 10 inquiries find proven historical precedent in top 5 |
-| **MRR** | **0.7317** | High mean rank position of relevant cases |
+| **Precedent Recall@1** | 62.67% | Top retrieved candidate belongs to matching intent precedent |
+| **Precedent Recall@3** | 82.83% | Matching intent precedent present in top 3 results |
+| **Precedent Recall@5** | **89.78%** | ~9 out of 10 inquiries find matching intent precedent in top 5 |
+| **MRR** | **0.7317** | Mean reciprocal rank of first matching intent precedent |
+
+*(Note: Precedent Recall@k measures precedent/intent-match retrieval recall over the indexed vector database, not end-to-end resolution correctness.)*
 
 ### C. Safety & Trust Gate Performance (1,800 Unseen Test Cases)
 | Safety Metric | Score | Goal & Significance |

@@ -113,7 +113,7 @@ Standard classification metrics fail when evaluating systems with an option to a
    $$\text{Unnecessary Escalation Rate} = \frac{N_{\text{routine} \cap \text{escalate}}}{N_{\text{total}}}$$
 6. **Unsupported Claim Rate**: Proportion of generated responses containing $\ge 1$ unsupported commitment, flagged by the deterministic groundedness/safety validator. (The LLM judge is evaluated separately as a multi-dimensional response-quality assessor and is not part of the hard Trust Gate):
    $$\text{Unsupported Claim Rate} = \frac{N_{\text{unsupported}}}{N_{\text{total evaluated}}}$$
-7. **Precedent Retrieval (Recall@k)**: Proportion of queries where a historically verified precedent with the matching intent appears within the top-$k$ FAISS candidates:
+7. **Precedent Intent Retrieval (Recall@k)**: Proportion of queries where at least one historically verified precedent belonging to the matching ground-truth intent appears within the top-$k$ FAISS candidates (measuring precedent/intent-match retrieval recall over the indexed vector knowledge base, rather than end-to-end resolution correctness):
    $$\text{Recall@k} = \frac{\sum_{i=1}^{N} \mathbb{I}(\text{intent} \in \{\text{retrieved}_{1..k}\})}{N}$$
 
 ---
@@ -149,6 +149,8 @@ While TF-IDF achieved a higher Macro F1 on the adversarial Golden Set (0.6308 vs
 | **Precedent Recall@3** | 82.83% | 74.50% | Matching intent precedent in top 3 |
 | **Precedent Recall@5** | **89.78%** | **86.00%** | Matching intent precedent in top 5 |
 | **MRR** | **0.7317** | **0.6491** | Mean Reciprocal Rank of first matching precedent |
+
+*(Note: Precedent Recall@k evaluates whether the top-k retrieved historical cases contain a matching intent precedent from which to ground a response; it measures vector retrieval quality over the 8,399 indexed dialogues rather than end-to-end resolution correctness.)*
 
 ### B. Reply Quality (LLM Judge on 200 Golden Set Cases)
 Evaluated across all 200 Golden Set interactions using `Qwen/Qwen2.5-0.5B-Instruct` (1–5 scale):
