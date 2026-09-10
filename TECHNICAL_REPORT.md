@@ -124,7 +124,7 @@ We benchmark our production architecture against two established baselines:
 
 1. **Majority Class Baseline (`src/intents/majority_baseline.py`)**: Always predicts `OTHER` (the verified dominant class with 3,881 occurrences in the training set), providing the empirical lower bound.
 2. **Simple TF-IDF + Logistic Regression Baseline (`src/intents/classifier.py`)**: Sparse unigram/bigram TF-IDF (5,000 features) with class-balanced multinomial logistic regression.
-3. **Production Retrieval-Augmented k-NN Classifier**: Dense sentence embeddings (`all-MiniLM-L6-v2`) with neighbor consensus calibration.
+3. **Production Retrieval-Augmented k-NN Classifier**: Dense sentence embeddings (`all-MiniLM-L6-v2`) with neighbor-consensus heuristic confidence.
 
 ### Baseline Comparison Table
 

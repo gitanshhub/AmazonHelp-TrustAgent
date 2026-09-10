@@ -90,7 +90,7 @@ class RetrievalAugmentedClassifier:
         total_weight = sum(vote_weights.values()) or 1.0
         best_intent = max(vote_weights.items(), key=lambda x: x[1])[0]
         
-        # Calibrate confidence: combination of top match similarity and vote consensus
+        # Compute retrieval-derived confidence: combination of top match similarity and vote consensus
         consensus_ratio = vote_weights[best_intent] / total_weight
         top_sim = float(top_sims[0])
         confidence = round(0.6 * top_sim + 0.4 * consensus_ratio, 3)
