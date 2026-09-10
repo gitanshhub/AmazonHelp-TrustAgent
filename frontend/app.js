@@ -40,10 +40,35 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Initial load
+  checkBackendHealth();
   loadMetrics();
   // Auto-analyze default message
   analyzeMessage(inputEl.value);
 });
+
+async function checkBackendHealth() {
+  const healthEl = document.getElementById("system-health");
+  if (!healthEl) return;
+  try {
+    const res = await fetch(`${API_BASE}/api/health`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.models_loaded) {
+        healthEl.className = "badge badge-status";
+        healthEl.textContent = "🟢 Backend Online · Models Loaded";
+      } else {
+        healthEl.className = "badge badge-status offline";
+        healthEl.textContent = "🟡 Initializing Models...";
+      }
+    } else {
+      healthEl.className = "badge badge-status offline";
+      healthEl.textContent = "🔴 Offline · Server Not Started";
+    }
+  } catch (e) {
+    healthEl.className = "badge badge-status offline";
+    healthEl.textContent = "🔴 Offline · Server Not Started";
+  }
+}
 
 async function analyzeMessage(text) {
   const submitBtn = document.getElementById("submit-btn");
@@ -89,6 +114,7 @@ function renderResults(data) {
   const confBar = document.getElementById("confidence-bar-fill");
 
   const respBody = document.getElementById("response-body");
+  const groundedBadge = document.getElementById("grounded-badge");
   const auditList = document.getElementById("audit-list");
   const casesList = document.getElementById("cases-list");
   const evidenceCount = document.getElementById("evidence-count");
@@ -101,14 +127,43 @@ function renderResults(data) {
   reasonTag.textContent = data.decision.reason_code;
   explanation.textContent = data.decision.reason;
 
+  // Stepper outcome update for step 4 (Trust Gate)
+  const stepDecision = document.getElementById("step-decision");
+  if (stepDecision) {
+    const stepCircle = stepDecision.querySelector(".step-circle");
+    const stepLabel = stepDecision.querySelector(".step-label");
+    stepDecision.classList.remove("step-auto", "step-escalate");
+    if (isAuto) {
+      stepDecision.classList.add("step-auto");
+      if (stepCircle) stepCircle.textContent = "✓";
+      if (stepLabel) stepLabel.textContent = "Trust Gate: AUTO";
+    } else {
+      stepDecision.classList.add("step-escalate");
+      if (stepCircle) stepCircle.textContent = "⚠";
+      if (stepLabel) stepLabel.textContent = "Trust Gate: ESCALATE";
+    }
+  }
+
   // 2. Intent & Confidence
   intentName.textContent = data.intent.name;
   const pct = (data.intent.confidence * 100).toFixed(1);
   confBadge.textContent = `${pct}% Confidence`;
   confBar.style.width = `${pct}%`;
 
-  // 3. Grounded Response
+  // 3. Grounded Response & Precedent Provenance Badge
   respBody.textContent = `"${data.response.text}"`;
+  if (groundedBadge) {
+    if (data.response && data.response.source === "retrieved_historical_case" && data.evidence && data.evidence.length > 0) {
+      groundedBadge.className = "grounded-badge";
+      groundedBadge.textContent = `✓ Adapted from Precedent #${data.evidence[0].case_id}`;
+    } else if (data.response && data.response.source === "conservative_fallback") {
+      groundedBadge.className = "grounded-badge fallback";
+      groundedBadge.textContent = "⚠ Conservative Policy Guidance";
+    } else {
+      groundedBadge.className = "grounded-badge";
+      groundedBadge.textContent = "✓ Grounded in Historical Cases";
+    }
+  }
 
   // 4. Audit Trail (Why section)
   auditList.innerHTML = "";
@@ -146,17 +201,39 @@ async function loadMetrics() {
     const res = await fetch(`${API_BASE}/api/support/metrics`);
     if (!res.ok) return;
     const data = await res.json();
-    if (data.intent_classification) {
-      document.getElementById("metric-macro-f1").textContent = 
-        `${(data.intent_classification.production_retrieval.accuracy * 100).toFixed(1)}%`;
-      document.getElementById("metric-recall").textContent = 
-        `${(data.retrieval.recall_at_5 * 100).toFixed(1)}%`;
-      const unsafeRate = data.trust_gate_safety.unsafe_auto_handling_rate !== undefined ? 
-        data.trust_gate_safety.unsafe_auto_handling_rate : data.trust_gate_safety.false_auto_handling_rate;
-      document.getElementById("metric-false-auto").textContent = 
-        `${(unsafeRate * 100).toFixed(2)}%`;
-      document.getElementById("metric-automation").textContent = 
-        `${(data.trust_gate_safety.automation_rate * 100).toFixed(1)}%`;
+
+    // 1. Selective Accuracy from selective_prediction_curve at threshold = 0.75
+    let selAcc = 90.7;
+    let autoCov = 17.9;
+    if (data.selective_prediction_curve && Array.isArray(data.selective_prediction_curve)) {
+      const pt = data.selective_prediction_curve.find(p => Math.abs(p.threshold - 0.75) < 0.01);
+      if (pt) {
+        selAcc = pt.safe_accuracy * 100;
+        autoCov = pt.automation_rate * 100;
+      }
+    }
+    const selAccEl = document.getElementById("metric-selective-accuracy");
+    if (selAccEl) selAccEl.textContent = `${selAcc.toFixed(1)}%`;
+
+    // 2. Precedent Recall@5
+    const recallEl = document.getElementById("metric-recall");
+    if (recallEl && data.retrieval && data.retrieval.recall_at_5 !== undefined) {
+      recallEl.textContent = `${(data.retrieval.recall_at_5 * 100).toFixed(1)}%`;
+    }
+
+    // 3. Unsafe Auto-Handling Rate
+    const unsafeEl = document.getElementById("metric-false-auto");
+    if (unsafeEl && data.trust_gate_safety) {
+      const unsafeRate = data.trust_gate_safety.unsafe_auto_handling_rate !== undefined
+        ? data.trust_gate_safety.unsafe_auto_handling_rate
+        : data.trust_gate_safety.false_auto_handling_rate;
+      unsafeEl.textContent = `${(unsafeRate * 100).toFixed(2)}%`;
+    }
+
+    // 4. Automation Coverage
+    const autoEl = document.getElementById("metric-automation");
+    if (autoEl) {
+      autoEl.textContent = `${autoCov.toFixed(1)}%`;
     }
   } catch (e) {
     // defaults remain

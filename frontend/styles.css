@@ -123,6 +123,12 @@ body {
   border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
+.badge-status.offline {
+  background: rgba(244, 63, 94, 0.15);
+  color: var(--coral-escalate);
+  border: 1px solid rgba(244, 63, 94, 0.3);
+}
+
 /* Main Layout Grid */
 .main-layout {
   display: grid;
@@ -310,6 +316,28 @@ textarea:focus {
   box-shadow: 0 0 8px var(--brand-blue);
 }
 
+.step.step-auto .step-circle {
+  background: var(--emerald-auto);
+  color: #fff;
+  box-shadow: 0 0 8px var(--emerald-auto);
+}
+
+.step.step-auto .step-label {
+  color: var(--emerald-auto);
+  font-weight: 600;
+}
+
+.step.step-escalate .step-circle {
+  background: var(--coral-escalate);
+  color: #fff;
+  box-shadow: 0 0 8px var(--coral-escalate);
+}
+
+.step.step-escalate .step-label {
+  color: var(--coral-escalate);
+  font-weight: 600;
+}
+
 .step-label {
   font-size: 0.7rem;
   color: var(--text-muted);
@@ -482,6 +510,10 @@ textarea:focus {
   font-size: 0.75rem;
   color: var(--emerald-auto);
   font-weight: 600;
+}
+
+.grounded-badge.fallback {
+  color: var(--amber-warn);
 }
 
 .response-body {
