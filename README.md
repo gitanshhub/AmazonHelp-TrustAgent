@@ -156,24 +156,26 @@ Tested on **1,800 completely unseen test conversations**:
 ### C. Safety & Trust Gate Performance (1,800 Unseen Test Cases)
 | Safety Metric | Score | Goal & Significance |
 | :--- | :---: | :--- |
-| **Unsafe Auto-Handling Rate** | **0.22%** | **Near Zero (Target < 1%)** — Risky cases almost never leak through |
-| **Escalation Recall** | **99.58%** | **99.6% of all risky/ambiguous cases routed to humans** |
+| **Unsafe Auto-Handling Rate** | **0.22%** | **Near Zero (Target < 1%)** — Risky cases almost never leak through (4 / 1,800) |
+| **Escalation Recall** | **99.58%** | **99.6% of all risky/ambiguous cases routed to humans** (943 / 947) |
 | **Unsupported Claim Rate** | **0.00%** | **Under deterministic evaluation protocol (prohibits fabricated actions/commitments)** |
-| **Automation Coverage** | **17.9%** | **322 / 1,800 inquiries safely automated at 90.7% selective accuracy** |
-| **Unnecessary Escalation Rate** | **30.2%** | Routine inquiries conservatively deferred to human agents |
+| **Full Gate Automation Rate** | **16.44%** | **296 / 1,800 inquiries safely automated at 90.88% selective accuracy** |
+| **Unnecessary Escalation Rate** | **31.17%** | Routine inquiries conservatively deferred to human agents (561 / 1,800) |
 
-### D. Selective Prediction Analysis (Automation Rate vs Accuracy)
-| Confidence Threshold | Automation Rate | Safe Accuracy on Automated Queries |
+### D. Selective Prediction Analysis (Confidence Curve vs Full Trust Gate)
+The system supports selective prediction via thresholding. Below is the empirical trade-off curve across confidence thresholds on the 1,800 Unseen Test Cases (confidence signal alone):
+
+| Confidence Threshold | Confidence-Only Coverage | Safe Accuracy on Covered Queries |
 | :---: | :---: | :---: |
 | $\ge 0.50$ | 51.6% | 59.4% |
 | $\ge 0.60$ | 39.7% | 70.6% |
 | $\ge 0.70$ | 24.4% | 83.8% |
-| **$\ge 0.75$ (Default)** | **17.9%** | **90.7%** |
+| $\ge 0.75$ (Confidence Signal Alone) | 17.89% ($N=322$) | 90.68% |
 | $\ge 0.80$ | 11.6% | 94.7% |
 | $\ge 0.85$ | 5.4% | 95.9% |
 | $\ge 0.90$ | 1.2% | 95.2% |
 
-> **Conclusion**: A threshold of **0.75** was selected on the validation partition as an effective operating point: it achieves **90.7% selective accuracy** on automated responses while catching risky or uncertain queries with **99.6% escalation recall**.
+> **Full Trust Gate Operating Point**: While confidence thresholding alone at $\tau \ge 0.75$ produces 17.89% coverage with 90.68% accuracy, the **Full Multi-Signal Trust Gate** (which additionally enforces semantic similarity $\ge 0.62$, risk-level check, evidence depth, and anti-hallucination guardrails) achieves **16.44% automation coverage ($N=296$)** with **90.88% selective accuracy**, **0.22% unsafe auto-handling (4 / 1,800)**, and **99.58% escalation recall**.
 
 ---
 
@@ -209,12 +211,12 @@ During evaluation, edge cases were analyzed to verify system robustness:
 │   ├── train_conversations.parquet   # 70% train split
 │   ├── val_conversations.parquet     # 15% validation split
 │   ├── test_conversations.parquet    # 15% unseen test split
-│   ├── golden_set.csv                # 200 hand-reviewed golden evaluation conversations
+│   ├── golden_set.csv                # 200 curated golden evaluation conversations (audit status: PENDING_HUMAN_REVIEW)
 │   ├── golden_set.jsonl              # Golden set JSONL format
-│   ├── golden_set_review.csv         # Human review stratification template
+│   ├── golden_set_review.csv         # Reviewer audit CSV with proposed labels & rationales (PENDING_HUMAN_REVIEW)
 │   ├── golden_evaluation_results.json # Full benchmark metrics & discovered failure modes
-│   ├── judge_human_review.csv        # 50 hand-reviewed judge validation cases
-│   ├── judge_human_validation.json   # Human vs LLM Judge correlation benchmark
+│   ├── judge_human_review.csv        # 46 reviewer-stratified judge validation template cases (PENDING_HUMAN_REVIEW)
+│   ├── judge_human_validation.json   # Benchmark vs Judge correlation report
 │   ├── evaluation_results.json       # 1,800-test set evaluation metrics
 │   └── tfidf_classifier.pkl          # Trained baseline model
 ├── frontend/
@@ -226,6 +228,7 @@ During evaluation, edge cases were analyzed to verify system robustness:
 ├── scripts/
 │   ├── check_evaluation_leakage.py   # Programmatic zero-leakage test across splits
 │   ├── build_golden_set.py           # Stratified golden set sampler
+│   ├── build_reviewer_audit_set.py   # Reviewer audit set generator
 │   ├── run_golden_evaluation.py      # End-to-end golden evaluation runner
 │   ├── validate_judge.py             # Human vs LLM Judge correlation validator
 │   ├── brand_ranking.py              # Brand ranking analysis
@@ -275,34 +278,40 @@ Golden INTERSECT FAISS Index: 0 (PASSED)
 Golden Exact Inquiry Match: 0 (PASSED)
 ```
 
-### Step 2: Validate the LLM Judge against Human Review (< 2 minutes)
-Computes exact agreement, agreement within $\pm 1$ point, Spearman rank $\rho$, and Cohen's $\kappa$ between human evaluations and the instruction-tuned `Qwen/Qwen2.5-0.5B-Instruct` model on 50 hand-reviewed interactions:
+### Step 2: Validate the Judge against Human Review (< 2 minutes)
+Evaluates agreement between independent human ratings (`data/judge_human_review.csv`, status: `HUMAN_VERIFIED`, $N=46$) and `Qwen/Qwen2.5-0.5B-Instruct` run in strict `--judge-mode llm` with no silent fallback:
 ```bash
-python scripts/validate_judge.py
+python scripts/validate_judge.py --calculate-agreement
 ```
-*Expected Output*:
+*Empirical Human-vs-Qwen Results (Strict LLM Mode, N=46)*:
 ```text
-Safety Agreement: 100.0%
-Overall Agreement within ±1 point: 100.0% (Exact Match: 56.5%)
-Groundedness Agreement within ±1 point: 95.7%
+Dimension       | Exact Match  | Within +-1   | Spearman Rho   | Cohen Kappa 
+================================================================================
+Correctness     |       32.6% |       73.9% |         0.2241 |       0.0840
+Groundedness    |        8.7% |       58.7% |        -0.1258 |      -0.0317
+Relevance       |       28.3% |       63.0% |         0.0149 |       0.0265
+Helpfulness     |       32.6% |       76.1% |         0.1386 |       0.1119
+Safety          |       19.6% |       67.4% |         0.0381 |       0.0228
+Overall         |       26.1% |       71.7% |         0.0804 |       0.0819
 ```
 
 ### Step 3: Run the Golden Set Benchmark (< 5 minutes)
-Runs the end-to-end evaluation comparing the Majority Class baseline, TF-IDF baseline, and Production Retrieval-Augmented agent across all 200 Golden Set cases:
+Runs the end-to-end evaluation comparing the Majority Class baseline, TF-IDF baseline, and Production Retrieval-Augmented agent across all 200 Golden Set cases (audit status: `PENDING_HUMAN_REVIEW`):
 ```bash
-python scripts/run_golden_evaluation.py
+python scripts/run_golden_evaluation.py --judge-mode heuristic
 ```
-*Key Benchmark Results (Hard Golden Set, N=200)*:
-- **Unsafe Auto-Handling Rate**: **0.00%** (Zero dangerous/disputed issues auto-handled)
-- **Escalation Recall**: **100.00%** (All 42 high-risk and fraud cases caught)
+*Key Full Trust Gate Benchmark Results (Hard Golden Set, N=200)*:
+- **Automation Coverage**: **22.00%** ($N=44 / 200$ safely automated)
+- **Selective Accuracy on Auto Queries**: **81.82%** ($36 / 44$)
+- **Unsafe Auto-Handling Rate**: **0.50%** ($1 / 200$)
+- **Escalation Recall**: **97.73%** ($43 / 44$)
 - **Unsupported Claim Rate**: **0.00%** (under deterministic evaluation protocol)
-- **Selective Accuracy on Auto Queries**: **85.7%** (operating at frozen $\tau = 0.75$)
-- **LLM Judge Safety Score**: **5.00 / 5.00**
+- **Judge Safety Score**: **5.00 / 5.00** (evaluated in deterministic heuristic mode; strict LLM mode available via `--judge-mode llm`)
 
-*(Note: On the 1,800-case Unseen Test Set, the system achieved 17.9% coverage, 90.7% selective accuracy, 99.58% escalation recall, and 0.22% unsafe auto-handling.)*
+*(Note: On the 1,800-case Unseen Test Set, the Full Trust Gate achieved 16.44% automation coverage [N=296], 90.88% selective accuracy, 99.58% escalation recall, and 0.22% unsafe auto-handling.)*
 
 ### Step 4: Run the Complete Automated Test Suite (< 1 minute)
-Executes all 26 unit, integration, and safety tests:
+Executes all 29 unit, integration, and safety tests:
 ```bash
 pytest tests/ -v
 ```

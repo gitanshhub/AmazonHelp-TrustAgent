@@ -1,5 +1,12 @@
 {
   "golden_set_size": 200,
+  "audit_status": "PENDING_HUMAN_REVIEW",
+  "judge_metadata": {
+    "judge_mode_configured": "heuristic",
+    "judge_tier_executed": "heuristic",
+    "judge_model": null,
+    "silent_fallback_prevented": true
+  },
   "baselines": {
     "majority": {
       "accuracy": 0.04,
@@ -16,7 +23,7 @@
           "precision": 0.0,
           "recall": 0.0,
           "f1_score": 0.0,
-          "support": 14
+          "support": 11
         },
         "DAMAGED_OR_DEFECTIVE_ITEM": {
           "precision": 0.0,
@@ -28,7 +35,7 @@
           "precision": 0.0,
           "recall": 0.0,
           "f1_score": 0.0,
-          "support": 23
+          "support": 22
         },
         "DIGITAL_SERVICES_AND_DEVICE": {
           "precision": 0.0,
@@ -40,7 +47,7 @@
           "precision": 0.0,
           "recall": 0.0,
           "f1_score": 0.0,
-          "support": 10
+          "support": 13
         },
         "ORDER_TRACKING_STATUS": {
           "precision": 0.0,
@@ -58,13 +65,13 @@
           "precision": 0.0,
           "recall": 0.0,
           "f1_score": 0.0,
-          "support": 19
+          "support": 18
         },
         "PAYMENT_AND_BILLING_ISSUE": {
           "precision": 0.0,
           "recall": 0.0,
           "f1_score": 0.0,
-          "support": 12
+          "support": 11
         },
         "PRIME_MEMBERSHIP_INQUIRY": {
           "precision": 0.0,
@@ -82,13 +89,13 @@
           "precision": 0.0,
           "recall": 0.0,
           "f1_score": 0.0,
-          "support": 8
+          "support": 9
         },
         "UNAUTHORIZED_TRANSACTION_FRAUD": {
           "precision": 0.0,
           "recall": 0.0,
           "f1_score": 0.0,
-          "support": 12
+          "support": 14
         },
         "WRONG_ITEM_RECEIVED": {
           "precision": 0.0,
@@ -111,9 +118,9 @@
       }
     },
     "tfidf_logistic": {
-      "accuracy": 0.635,
-      "macro_f1": 0.6308,
-      "weighted_f1": 0.6333,
+      "accuracy": 0.61,
+      "macro_f1": 0.6075,
+      "weighted_f1": 0.6051,
       "per_intent": {
         "ACCOUNT_ACCESS_SECURITY": {
           "precision": 0.75,
@@ -122,10 +129,10 @@
           "support": 10
         },
         "CANCELLATION_REQUEST": {
-          "precision": 0.571,
-          "recall": 0.571,
-          "f1_score": 0.571,
-          "support": 14
+          "precision": 0.429,
+          "recall": 0.545,
+          "f1_score": 0.48,
+          "support": 11
         },
         "DAMAGED_OR_DEFECTIVE_ITEM": {
           "precision": 0.917,
@@ -134,10 +141,10 @@
           "support": 14
         },
         "DELIVERY_DELAY": {
-          "precision": 0.7,
-          "recall": 0.609,
-          "f1_score": 0.651,
-          "support": 23
+          "precision": 0.65,
+          "recall": 0.591,
+          "f1_score": 0.619,
+          "support": 22
         },
         "DIGITAL_SERVICES_AND_DEVICE": {
           "precision": 1.0,
@@ -147,9 +154,9 @@
         },
         "GENERAL_INQUIRY_FEEDBACK": {
           "precision": 0.5,
-          "recall": 0.2,
-          "f1_score": 0.286,
-          "support": 10
+          "recall": 0.154,
+          "f1_score": 0.235,
+          "support": 13
         },
         "ORDER_TRACKING_STATUS": {
           "precision": 0.5,
@@ -164,16 +171,16 @@
           "support": 8
         },
         "PACKAGE_DELIVERED_NOT_RECEIVED": {
-          "precision": 0.517,
-          "recall": 0.789,
-          "f1_score": 0.625,
-          "support": 19
+          "precision": 0.483,
+          "recall": 0.778,
+          "f1_score": 0.596,
+          "support": 18
         },
         "PAYMENT_AND_BILLING_ISSUE": {
-          "precision": 0.7,
-          "recall": 0.583,
-          "f1_score": 0.636,
-          "support": 12
+          "precision": 0.6,
+          "recall": 0.545,
+          "f1_score": 0.571,
+          "support": 11
         },
         "PRIME_MEMBERSHIP_INQUIRY": {
           "precision": 0.846,
@@ -182,22 +189,22 @@
           "support": 12
         },
         "REFUND_NOT_RECEIVED": {
-          "precision": 0.833,
-          "recall": 0.833,
-          "f1_score": 0.833,
+          "precision": 0.75,
+          "recall": 0.75,
+          "f1_score": 0.75,
           "support": 12
         },
         "RETURN_EXCHANGE_INQUIRY": {
           "precision": 0.857,
-          "recall": 0.75,
-          "f1_score": 0.8,
-          "support": 8
+          "recall": 0.667,
+          "f1_score": 0.75,
+          "support": 9
         },
         "UNAUTHORIZED_TRANSACTION_FRAUD": {
-          "precision": 0.333,
-          "recall": 0.333,
-          "f1_score": 0.333,
-          "support": 12
+          "precision": 0.417,
+          "recall": 0.357,
+          "f1_score": 0.385,
+          "support": 14
         },
         "WRONG_ITEM_RECEIVED": {
           "precision": 0.455,
@@ -206,23 +213,23 @@
           "support": 14
         },
         "macro avg": {
-          "precision": 0.65,
-          "recall": 0.633,
-          "f1_score": 0.631,
+          "precision": 0.628,
+          "recall": 0.615,
+          "f1_score": 0.607,
           "support": 200
         },
         "weighted avg": {
-          "precision": 0.651,
-          "recall": 0.635,
-          "f1_score": 0.633,
+          "precision": 0.627,
+          "recall": 0.61,
+          "f1_score": 0.605,
           "support": 200
         }
       }
     },
     "production_retrieval": {
-      "accuracy": 0.535,
-      "macro_f1": 0.5087,
-      "weighted_f1": 0.5274,
+      "accuracy": 0.515,
+      "macro_f1": 0.4946,
+      "weighted_f1": 0.5044,
       "per_intent": {
         "ACCOUNT_ACCESS_SECURITY": {
           "precision": 0.889,
@@ -231,10 +238,10 @@
           "support": 10
         },
         "CANCELLATION_REQUEST": {
-          "precision": 0.538,
-          "recall": 0.5,
-          "f1_score": 0.519,
-          "support": 14
+          "precision": 0.385,
+          "recall": 0.455,
+          "f1_score": 0.417,
+          "support": 11
         },
         "DAMAGED_OR_DEFECTIVE_ITEM": {
           "precision": 0.6,
@@ -243,10 +250,10 @@
           "support": 14
         },
         "DELIVERY_DELAY": {
-          "precision": 0.429,
-          "recall": 0.652,
-          "f1_score": 0.517,
-          "support": 23
+          "precision": 0.4,
+          "recall": 0.636,
+          "f1_score": 0.491,
+          "support": 22
         },
         "DIGITAL_SERVICES_AND_DEVICE": {
           "precision": 1.0,
@@ -256,9 +263,9 @@
         },
         "GENERAL_INQUIRY_FEEDBACK": {
           "precision": 1.0,
-          "recall": 0.2,
-          "f1_score": 0.333,
-          "support": 10
+          "recall": 0.154,
+          "f1_score": 0.267,
+          "support": 13
         },
         "ORDER_TRACKING_STATUS": {
           "precision": 0.533,
@@ -273,16 +280,16 @@
           "support": 8
         },
         "PACKAGE_DELIVERED_NOT_RECEIVED": {
-          "precision": 0.516,
-          "recall": 0.842,
-          "f1_score": 0.64,
-          "support": 19
+          "precision": 0.484,
+          "recall": 0.833,
+          "f1_score": 0.612,
+          "support": 18
         },
         "PAYMENT_AND_BILLING_ISSUE": {
           "precision": 1.0,
-          "recall": 0.333,
-          "f1_score": 0.5,
-          "support": 12
+          "recall": 0.364,
+          "f1_score": 0.533,
+          "support": 11
         },
         "PRIME_MEMBERSHIP_INQUIRY": {
           "precision": 0.833,
@@ -300,13 +307,13 @@
           "precision": 0.0,
           "recall": 0.0,
           "f1_score": 0.0,
-          "support": 8
+          "support": 9
         },
         "UNAUTHORIZED_TRANSACTION_FRAUD": {
           "precision": 0.286,
-          "recall": 0.333,
-          "f1_score": 0.308,
-          "support": 12
+          "recall": 0.286,
+          "f1_score": 0.286,
+          "support": 14
         },
         "WRONG_ITEM_RECEIVED": {
           "precision": 0.75,
@@ -315,25 +322,25 @@
           "support": 14
         },
         "macro avg": {
-          "precision": 0.614,
-          "recall": 0.511,
-          "f1_score": 0.509,
+          "precision": 0.6,
+          "recall": 0.502,
+          "f1_score": 0.495,
           "support": 200
         },
         "weighted avg": {
-          "precision": 0.616,
-          "recall": 0.535,
-          "f1_score": 0.527,
+          "precision": 0.602,
+          "recall": 0.515,
+          "f1_score": 0.504,
           "support": 200
         }
       }
     }
   },
   "retrieval": {
-    "recall_at_1": 0.53,
-    "recall_at_3": 0.745,
-    "recall_at_5": 0.86,
-    "mrr": 0.6491
+    "recall_at_1": 0.505,
+    "recall_at_3": 0.72,
+    "recall_at_5": 0.83,
+    "mrr": 0.6239
   },
   "reply_quality_judge": {
     "correctness": 3.91,
@@ -346,47 +353,88 @@
   "safety_and_escalation": {
     "total_cases": 200,
     "automation_rate": 0.22,
-    "unsafe_auto_handling_rate": 0.0,
-    "unnecessary_escalation_rate": 0.57,
-    "false_auto_handling_rate": 0.0,
-    "false_escalation_rate": 0.57,
-    "escalation_precision": 0.2692,
-    "escalation_recall": 1.0,
+    "unsafe_auto_handling_rate": 0.005,
+    "unnecessary_escalation_rate": 0.565,
+    "false_auto_handling_rate": 0.005,
+    "false_escalation_rate": 0.565,
+    "escalation_precision": 0.2756,
+    "escalation_recall": 0.9773,
     "confusion_matrix": {
-      "true_escalations": 42,
-      "unnecessary_escalations": 114,
-      "false_escalations": 114,
-      "safe_auto_handled": 44,
-      "unsafe_auto_handled": 0
-    }
+      "true_escalations": 43,
+      "unnecessary_escalations": 113,
+      "false_escalations": 113,
+      "safe_auto_handled": 43,
+      "unsafe_auto_handled": 1
+    },
+    "full_trust_gate_automation_rate": 0.22,
+    "selective_accuracy_on_automated_cohort": 0.8182,
+    "total_automated_cases": 44,
+    "total_escalated_cases": 156
   },
-  "threshold_analysis": [
+  "confidence_only_selective_curve": [
     {
       "threshold": 0.6,
       "coverage_pct": 57.0,
-      "selective_accuracy_pct": 68.4,
-      "false_auto_rate_pct": 3.0,
+      "selective_accuracy_pct": 67.5,
+      "false_auto_rate_pct": 3.5,
       "escalation_rate_pct": 43.0
     },
     {
       "threshold": 0.7,
       "coverage_pct": 34.0,
-      "selective_accuracy_pct": 82.4,
-      "false_auto_rate_pct": 0.5,
+      "selective_accuracy_pct": 80.9,
+      "false_auto_rate_pct": 1.0,
       "escalation_rate_pct": 66.0
     },
     {
       "threshold": 0.75,
       "coverage_pct": 24.5,
-      "selective_accuracy_pct": 85.7,
-      "false_auto_rate_pct": 0.0,
+      "selective_accuracy_pct": 83.7,
+      "false_auto_rate_pct": 0.5,
       "escalation_rate_pct": 75.5
     },
     {
       "threshold": 0.8,
       "coverage_pct": 15.5,
-      "selective_accuracy_pct": 90.3,
+      "selective_accuracy_pct": 87.1,
+      "false_auto_rate_pct": 0.5,
+      "escalation_rate_pct": 84.5
+    },
+    {
+      "threshold": 0.9,
+      "coverage_pct": 2.5,
+      "selective_accuracy_pct": 80.0,
       "false_auto_rate_pct": 0.0,
+      "escalation_rate_pct": 97.5
+    }
+  ],
+  "threshold_analysis": [
+    {
+      "threshold": 0.6,
+      "coverage_pct": 57.0,
+      "selective_accuracy_pct": 67.5,
+      "false_auto_rate_pct": 3.5,
+      "escalation_rate_pct": 43.0
+    },
+    {
+      "threshold": 0.7,
+      "coverage_pct": 34.0,
+      "selective_accuracy_pct": 80.9,
+      "false_auto_rate_pct": 1.0,
+      "escalation_rate_pct": 66.0
+    },
+    {
+      "threshold": 0.75,
+      "coverage_pct": 24.5,
+      "selective_accuracy_pct": 83.7,
+      "false_auto_rate_pct": 0.5,
+      "escalation_rate_pct": 75.5
+    },
+    {
+      "threshold": 0.8,
+      "coverage_pct": 15.5,
+      "selective_accuracy_pct": 87.1,
+      "false_auto_rate_pct": 0.5,
       "escalation_rate_pct": 84.5
     },
     {
@@ -400,7 +448,7 @@
   "top_5_discovered_failure_modes": [
     {
       "failure_mode": "Over-conservative Safety Gating on Valid Inquiry",
-      "frequency": 114,
+      "frequency": 113,
       "real_customer_example": "Thanks for sending me an \"inspected\" used 3 ring binder..with a broken 3rd ring. Really nice.",
       "agent_prediction": "OTHER",
       "expected_intent": "DAMAGED_OR_DEFECTIVE_ITEM",
@@ -409,7 +457,7 @@
     },
     {
       "failure_mode": "Subtle Phrasing / Low Confidence Ambiguity",
-      "frequency": 67,
+      "frequency": 70,
       "real_customer_example": "Thanks for sending me an \"inspected\" used 3 ring binder..with a broken 3rd ring. Really nice.",
       "agent_prediction": "OTHER",
       "expected_intent": "DAMAGED_OR_DEFECTIVE_ITEM",
@@ -418,11 +466,11 @@
     },
     {
       "failure_mode": "Semantic Generalization Gap",
-      "frequency": 25,
-      "real_customer_example": "when are you processing pre ordered xbox one x? Mine had said shipping for yesterday but nothing happened.",
-      "agent_prediction": "DELIVERY_DELAY",
-      "expected_intent": "ORDER_TRACKING_STATUS",
-      "why_failed": "Nearest neighbor retrieval density was split between related intents. The model assigned confidence 0.76.",
+      "frequency": 26,
+      "real_customer_example": "How a delivery person cancel an order? Please rethink your shipment policy. Very disappointed today.",
+      "agent_prediction": "CANCELLATION_REQUEST",
+      "expected_intent": "DELIVERY_DELAY",
+      "why_failed": "Nearest neighbor retrieval density was split between related intents. The model assigned confidence 0.78.",
       "architectural_fix": "Incorporate cross-turn history and fine-tuned domain cross-encoders to resolve ambiguous category boundaries."
     },
     {
@@ -432,6 +480,15 @@
       "agent_prediction": "PACKAGE_DELIVERED_NOT_RECEIVED",
       "expected_intent": "UNAUTHORIZED_TRANSACTION_FRAUD",
       "why_failed": "Nearest neighbor retrieval density was split between related intents. The model assigned confidence 0.66.",
+      "architectural_fix": "Incorporate cross-turn history and fine-tuned domain cross-encoders to resolve ambiguous category boundaries."
+    },
+    {
+      "failure_mode": "High-Risk Safety Escape",
+      "frequency": 1,
+      "real_customer_example": "Dear am I wrong in asking refund for this? #nokiascam #scamdeal #amazonscam #NewsAlert #news #harassment [LINK]",
+      "agent_prediction": "REFUND_NOT_RECEIVED",
+      "expected_intent": "UNAUTHORIZED_TRANSACTION_FRAUD",
+      "why_failed": "Nearest neighbor retrieval density was split between related intents. The model assigned confidence 0.81.",
       "architectural_fix": "Incorporate cross-turn history and fine-tuned domain cross-encoders to resolve ambiguous category boundaries."
     }
   ],
@@ -443,10 +500,10 @@
       "support": 10
     },
     "CANCELLATION_REQUEST": {
-      "precision": 0.538,
-      "recall": 0.5,
-      "f1_score": 0.519,
-      "support": 14
+      "precision": 0.385,
+      "recall": 0.455,
+      "f1_score": 0.417,
+      "support": 11
     },
     "DAMAGED_OR_DEFECTIVE_ITEM": {
       "precision": 0.6,
@@ -455,10 +512,10 @@
       "support": 14
     },
     "DELIVERY_DELAY": {
-      "precision": 0.429,
-      "recall": 0.652,
-      "f1_score": 0.517,
-      "support": 23
+      "precision": 0.4,
+      "recall": 0.636,
+      "f1_score": 0.491,
+      "support": 22
     },
     "DIGITAL_SERVICES_AND_DEVICE": {
       "precision": 1.0,
@@ -468,9 +525,9 @@
     },
     "GENERAL_INQUIRY_FEEDBACK": {
       "precision": 1.0,
-      "recall": 0.2,
-      "f1_score": 0.333,
-      "support": 10
+      "recall": 0.154,
+      "f1_score": 0.267,
+      "support": 13
     },
     "ORDER_TRACKING_STATUS": {
       "precision": 0.533,
@@ -485,16 +542,16 @@
       "support": 8
     },
     "PACKAGE_DELIVERED_NOT_RECEIVED": {
-      "precision": 0.516,
-      "recall": 0.842,
-      "f1_score": 0.64,
-      "support": 19
+      "precision": 0.484,
+      "recall": 0.833,
+      "f1_score": 0.612,
+      "support": 18
     },
     "PAYMENT_AND_BILLING_ISSUE": {
       "precision": 1.0,
-      "recall": 0.333,
-      "f1_score": 0.5,
-      "support": 12
+      "recall": 0.364,
+      "f1_score": 0.533,
+      "support": 11
     },
     "PRIME_MEMBERSHIP_INQUIRY": {
       "precision": 0.833,
@@ -512,13 +569,13 @@
       "precision": 0.0,
       "recall": 0.0,
       "f1_score": 0.0,
-      "support": 8
+      "support": 9
     },
     "UNAUTHORIZED_TRANSACTION_FRAUD": {
       "precision": 0.286,
-      "recall": 0.333,
-      "f1_score": 0.308,
-      "support": 12
+      "recall": 0.286,
+      "f1_score": 0.286,
+      "support": 14
     },
     "WRONG_ITEM_RECEIVED": {
       "precision": 0.75,
@@ -527,15 +584,15 @@
       "support": 14
     },
     "macro avg": {
-      "precision": 0.614,
-      "recall": 0.511,
-      "f1_score": 0.509,
+      "precision": 0.6,
+      "recall": 0.502,
+      "f1_score": 0.495,
       "support": 200
     },
     "weighted avg": {
-      "precision": 0.616,
-      "recall": 0.535,
-      "f1_score": 0.527,
+      "precision": 0.602,
+      "recall": 0.515,
+      "f1_score": 0.504,
       "support": 200
     }
   }

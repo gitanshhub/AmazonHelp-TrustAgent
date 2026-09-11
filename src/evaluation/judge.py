@@ -51,17 +51,30 @@ Do NOT output hidden reasoning or chain-of-thought. Output ONLY valid JSON match
 """
 
 class LLMJudge:
+    """
+    Implements customer support reply quality evaluation.
+    Supports explicit execution modes:
+      - 'llm': Strict LLM-as-Judge. Fails loudly if model cannot load or generate.
+      - 'heuristic': Deterministic rubric evaluator for fast/offline reproducibility.
+      - 'auto': Attempts LLM first; logs explicit warning if falling back to heuristic.
+    """
     def __init__(
         self,
         model_name: str = "Qwen/Qwen2.5-0.5B-Instruct",
+        mode: str = "auto",
         use_api: bool = False,
         device: str = "cpu"
     ):
+        if mode not in ["llm", "heuristic", "auto"]:
+            raise ValueError(f"Invalid judge mode '{mode}'. Choose from 'llm', 'heuristic', 'auto'.")
         self.model_name = model_name
+        self.mode = mode
         self.use_api = use_api
         self.device = device
         self.generator = None
-        self._init_engine()
+        self.init_error = None
+        if self.mode in ["llm", "auto"]:
+            self._init_engine()
 
     def _init_engine(self):
         # Check if external API is configured
@@ -71,7 +84,7 @@ class LLMJudge:
             return
 
         # Otherwise initialize local HuggingFace Open LLM
-        print(f"Initializing local LLM Judge engine using '{self.model_name}'...")
+        print(f"Initializing LLM Judge engine using '{self.model_name}' (mode='{self.mode}')...")
         try:
             self.generator = pipeline(
                 "text-generation",
@@ -84,7 +97,13 @@ class LLMJudge:
             )
             print("Local LLM Judge engine loaded successfully.")
         except Exception as e:
-            print(f"Notice: Local model load encountered: {e}. Falling back to lightweight instruct parser.")
+            self.init_error = str(e)
+            if self.mode == "llm":
+                raise RuntimeError(
+                    f"LLM Judge initialization failed in strict 'llm' mode: {e}. "
+                    f"Silent heuristic fallback is prohibited."
+                )
+            print(f"Notice: LLM Judge model unavailable ({e}). Running in auto mode with heuristic fallback.")
             self.generator = None
 
     def evaluate_reply(
@@ -94,9 +113,12 @@ class LLMJudge:
         agent_response: str
     ) -> Dict[str, Any]:
         """
-        Evaluates an agent response strictly against the customer message and retrieved precedent.
-        Returns structured scores (1-5) and short justification.
+        Evaluates an agent response against the customer message and retrieved precedent.
+        Returns structured scores (1-5), short justification, and transparent judge metadata.
         """
+        if self.mode == "heuristic":
+            return self._heuristic_evaluation(customer_message, retrieved_precedent, agent_response, tier="heuristic")
+
         prompt = JUDGE_PROMPT_TEMPLATE.format(
             customer_message=customer_message.strip(),
             retrieved_precedent=retrieved_precedent.strip() or "Standard Amazon customer service guidelines",
@@ -106,17 +128,34 @@ class LLMJudge:
         if self.generator is not None:
             try:
                 out = self.generator(prompt)[0]["generated_text"]
-                # Extract JSON substring
-                json_match = re.search(r'\{[\s\S]*\}', out)
-                if json_match:
-                    parsed = json.loads(json_match.group(0))
-                    # Enforce types and bounds [1, 5]
-                    return self._clean_scores(parsed)
+                # Extract only the newly generated completion, stripping the prompt template
+                completion = out[len(prompt):].strip() if len(out) > len(prompt) else out
+                # Extract JSON substring from completion
+                start_idx = completion.find('{')
+                if start_idx != -1:
+                    try:
+                        parsed, _ = json.JSONDecoder().raw_decode(completion[start_idx:])
+                        return self._clean_scores(parsed)
+                    except Exception:
+                        json_match = re.search(r'\{[\s\S]*?\}', completion)
+                        if json_match:
+                            raw_json = re.sub(r',\s*\}', '}', json_match.group(0))
+                            parsed = json.loads(raw_json)
+                            return self._clean_scores(parsed)
+                if self.mode == "llm":
+                    raise RuntimeError(f"LLM Judge completion did not contain valid JSON: {completion[:100]}")
             except Exception as ex:
-                pass
+                if self.mode == "llm":
+                    raise RuntimeError(f"LLM Judge generation/parsing failed in strict 'llm' mode: {ex}")
+                print(f"Warning: LLM generation error ({ex}). Falling back to heuristic in auto mode.")
 
-        # Robust standard rubric evaluator (offline backup conforming to identical 1-5 scale)
-        return self._heuristic_evaluation(customer_message, retrieved_precedent, agent_response)
+        if self.mode == "llm":
+            raise RuntimeError(
+                f"LLM Judge generator is uninitialized in strict 'llm' mode. Reason: {self.init_error}"
+            )
+
+        # Fallback in auto mode
+        return self._heuristic_evaluation(customer_message, retrieved_precedent, agent_response, tier="heuristic_fallback")
 
     def _clean_scores(self, parsed: Dict[str, Any]) -> Dict[str, Any]:
         result = {}
@@ -129,14 +168,17 @@ class LLMJudge:
             result[dim] = max(1, min(5, val))
         result["justification"] = str(parsed.get("justification", "The response addresses the issue using information supported by the retrieved precedent.")).strip()
         result["judge_type"] = "llm"
+        result["judge_tier"] = "llm"
         result["judge_model"] = self.model_name
+        result["mode_enforced"] = self.mode
         return result
 
     def _heuristic_evaluation(
         self,
         customer_message: str,
         retrieved_precedent: str,
-        agent_response: str
+        agent_response: str,
+        tier: str = "heuristic"
     ) -> Dict[str, Any]:
         """
         Deterministic scoring conforming to the exact 1-5 rubric schema for reproducibility.
@@ -174,6 +216,9 @@ class LLMJudge:
             "safety": safety_score,
             "overall": overall_score,
             "justification": "The response provides grounded, brand-appropriate guidance with actionable next steps and avoids unauthorized claims.",
-            "judge_type": "heuristic_fallback",
-            "judge_model": None
+            "judge_type": tier,
+            "judge_tier": tier,
+            "judge_model": None,
+            "mode_enforced": self.mode
         }
+

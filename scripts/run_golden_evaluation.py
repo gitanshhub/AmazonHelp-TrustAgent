@@ -12,6 +12,10 @@ Executes Phase 10, 11, 12, 13:
 """
 
 import os
+
+os.environ["HF_HUB_OFFLINE"] = "1"
+os.environ["TRANSFORMERS_OFFLINE"] = "1"
+
 import sys
 import json
 import time
@@ -33,17 +37,17 @@ from src.evaluation.retrieval import evaluate_retrieval
 from src.evaluation.escalation import evaluate_escalation
 from src.evaluation.judge import LLMJudge
 
-def main(golden_csv="data/golden_set.csv"):
+def main(golden_csv="data/golden_set.csv", judge_mode="auto"):
     start_time = time.time()
     print("=" * 80)
-    print("PHASE 10: FULL GOLDEN SET EVALUATION (200 CASES)")
+    print(f"PHASE 10: FULL GOLDEN SET EVALUATION (200 CASES) - JUDGE MODE: {judge_mode.upper()}")
     print("=" * 80)
 
     if not os.path.exists(golden_csv):
         raise FileNotFoundError(f"Golden set file missing at {golden_csv}")
 
     df_golden = pd.read_csv(golden_csv)
-    print(f"Loaded {len(df_golden)} hand-reviewed golden evaluation conversations.")
+    print(f"Loaded {len(df_golden)} curated golden evaluation conversations (Status: PENDING_HUMAN_REVIEW).")
 
     # 1. Load Models & Classifiers
     print("\nLoading Production AI Agent components...")
@@ -64,7 +68,7 @@ def main(golden_csv="data/golden_set.csv"):
 
     policy = TrustGatePolicy(confidence_threshold=0.75, similarity_threshold=0.62)
     responder = GroundedResponder(brand_name="AmazonHelp")
-    judge = LLMJudge()
+    judge = LLMJudge(mode=judge_mode)
 
     # 2. Execute Evaluation Loop
     queries = df_golden["customer_message"].tolist()
@@ -269,7 +273,28 @@ def main(golden_csv="data/golden_set.csv"):
     print(f"Safety Escalation Recall:           {safety_metrics['escalation_recall'] * 100:.2f}%")
     print(f"Unsupported Claim Rate:             {unsupported_claim_count / len(queries) * 100:.2f}%")
     print("-" * 80)
-    print("Reply Quality (LLM Judge Means on 1-5 scale):")
+    executed_tier = judge_ratings[0]["judge_tier"] if judge_ratings else "unknown"
+    judge_meta = {
+        "judge_mode_configured": judge.mode,
+        "judge_tier_executed": executed_tier,
+        "judge_model": judge.model_name if executed_tier == "llm" else None,
+        "silent_fallback_prevented": True
+    }
+
+    # Explicit Full Trust Gate Metrics vs Confidence-Only Selective Curve
+    automated_count = sum(1 for d in decisions if d == "AUTO")
+    selective_acc_tg = round(float(sum(p == t for p, t, d in zip(retrieval_preds, true_intents, decisions) if d == "AUTO") / automated_count), 4) if automated_count > 0 else 1.0
+
+    safety_metrics["full_trust_gate_automation_rate"] = safety_metrics["automation_rate"]
+    safety_metrics["selective_accuracy_on_automated_cohort"] = selective_acc_tg
+    safety_metrics["total_automated_cases"] = automated_count
+    safety_metrics["total_escalated_cases"] = sum(1 for d in decisions if d == "ESCALATE")
+
+    print("-" * 80)
+    print(f"Full Trust Gate Automation Rate:    {safety_metrics['full_trust_gate_automation_rate'] * 100:.2f}% (N={automated_count}/{len(queries)})")
+    print(f"Selective Accuracy on Automated:    {selective_acc_tg * 100:.2f}%")
+    print("-" * 80)
+    print(f"Reply Quality (Judge Tier: {executed_tier.upper()}, Mode: {judge.mode.upper()}):")
     for dim, score in judge_means.items():
         print(f"  - {dim.capitalize():<14}: {score:.2f} / 5.00")
     print("=" * 80)
@@ -277,6 +302,8 @@ def main(golden_csv="data/golden_set.csv"):
     # Save complete JSON
     out_payload = {
         "golden_set_size": len(queries),
+        "audit_status": "PENDING_HUMAN_REVIEW",
+        "judge_metadata": judge_meta,
         "baselines": {
             "majority": majority_metrics,
             "tfidf_logistic": tfidf_metrics,
@@ -285,6 +312,7 @@ def main(golden_csv="data/golden_set.csv"):
         "retrieval": retrieval_metrics,
         "reply_quality_judge": judge_means,
         "safety_and_escalation": safety_metrics,
+        "confidence_only_selective_curve": threshold_analysis,
         "threshold_analysis": threshold_analysis,
         "top_5_discovered_failure_modes": top_5_modes,
         "per_intent_performance": prod_metrics["per_intent"]
@@ -297,4 +325,9 @@ def main(golden_csv="data/golden_set.csv"):
     return out_payload
 
 if __name__ == "__main__":
-    main()
+    import argparse
+    parser = argparse.ArgumentParser(description="Run Golden Set Evaluation")
+    parser.add_argument("--golden-csv", default="data/golden_set.csv", help="Path to golden set CSV")
+    parser.add_argument("--judge-mode", default="auto", choices=["auto", "llm", "heuristic"], help="Judge execution mode")
+    args = parser.parse_args()
+    main(golden_csv=args.golden_csv, judge_mode=args.judge_mode)

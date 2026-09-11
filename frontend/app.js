@@ -202,18 +202,19 @@ async function loadMetrics() {
     if (!res.ok) return;
     const data = await res.json();
 
-    // 1. Selective Accuracy from selective_prediction_curve at threshold = 0.75
-    let selAcc = 90.7;
-    let autoCov = 17.9;
-    if (data.selective_prediction_curve && Array.isArray(data.selective_prediction_curve)) {
-      const pt = data.selective_prediction_curve.find(p => Math.abs(p.threshold - 0.75) < 0.01);
-      if (pt) {
-        selAcc = pt.safe_accuracy * 100;
-        autoCov = pt.automation_rate * 100;
+    // 1. Full Multi-Signal Trust Gate metrics on Unseen Test Set (N=1,800)
+    let selAcc = 90.88;
+    let autoCov = 16.44;
+    if (data.trust_gate_safety) {
+      if (data.trust_gate_safety.selective_accuracy_on_automated_cohort !== undefined) {
+        selAcc = data.trust_gate_safety.selective_accuracy_on_automated_cohort * 100;
+      }
+      if (data.trust_gate_safety.automation_rate !== undefined) {
+        autoCov = data.trust_gate_safety.automation_rate * 100;
       }
     }
     const selAccEl = document.getElementById("metric-selective-accuracy");
-    if (selAccEl) selAccEl.textContent = `${selAcc.toFixed(1)}%`;
+    if (selAccEl) selAccEl.textContent = `${selAcc.toFixed(2)}%`;
 
     // 2. Precedent Recall@5
     const recallEl = document.getElementById("metric-recall");
@@ -233,7 +234,7 @@ async function loadMetrics() {
     // 4. Automation Coverage
     const autoEl = document.getElementById("metric-automation");
     if (autoEl) {
-      autoEl.textContent = `${autoCov.toFixed(1)}%`;
+      autoEl.textContent = `${autoCov.toFixed(2)}%`;
     }
   } catch (e) {
     // defaults remain

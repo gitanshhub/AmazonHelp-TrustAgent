@@ -127,18 +127,21 @@ def build_golden_set(
     df_golden.to_csv(csv_path, index=False, encoding="utf-8")
     df_golden.to_json(jsonl_path, orient="records", lines=True, force_ascii=False)
     
-    # Review format with explicit human check columns
+    # Review format with explicit audit columns marked PENDING_HUMAN_REVIEW
     df_review = df_golden.copy()
-    df_review["human_verified_intent"] = df_review["intent"]
-    df_review["human_verified_action"] = df_review["expected_action"]
-    df_review["reviewer_status"] = "VERIFIED"
+    df_review["dataset_heuristic_intent"] = df_review["intent"]
+    df_review["proposed_intent"] = df_review["intent"]
+    df_review["dataset_heuristic_action"] = df_review["expected_action"]
+    df_review["proposed_action"] = df_review["expected_action"]
+    df_review["audit_status"] = "PENDING_HUMAN_REVIEW"
+    df_review["reviewer_rationale_notes"] = df_review["notes"]
     df_review.to_csv(review_path, index=False, encoding="utf-8")
 
     print(f"\nConstructed Golden Set with {len(df_golden)} examples.")
     print(f"Saved to:")
     print(f"  - CSV:   {csv_path}")
     print(f"  - JSONL: {jsonl_path}")
-    print(f"  - Human Review Template: {review_path}")
+    print(f"  - Reviewer Audit Template: {review_path} (status: PENDING_HUMAN_REVIEW)")
 
     print("\n--- Golden Set Intent Distribution ---")
     print(df_golden["intent"].value_counts())

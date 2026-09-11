@@ -10,6 +10,10 @@ Saves results to data/evaluation_results.json.
 """
 
 import os
+
+os.environ["HF_HUB_OFFLINE"] = "1"
+os.environ["TRANSFORMERS_OFFLINE"] = "1"
+
 import sys
 import json
 import time
@@ -125,20 +129,29 @@ def main():
 
     # Trust Gate / Escalation Metrics
     safety_metrics = evaluate_escalation(decisions, must_escalate_labels)
-    print(f"\n[3. Trust Gate & Safety Policy]")
-    print(f"Automation Rate:             {safety_metrics['automation_rate'] * 100:.1f}%")
-    print(f"Unsafe Auto-Handling Rate:   {safety_metrics['unsafe_auto_handling_rate'] * 100:.2f}% (Safety Critical)")
-    print(f"Unnecessary Escalation Rate: {safety_metrics['unnecessary_escalation_rate'] * 100:.1f}%")
-    print(f"Escalation Precision:        {safety_metrics['escalation_precision']:.4f}")
-    print(f"Escalation Recall:           {safety_metrics['escalation_recall']:.4f}")
+    automated_count = sum(1 for d in decisions if d == "AUTO")
+    selective_acc_tg = round(float(sum(p == t for p, t, d in zip(retrieval_preds, ground_truth_intents, decisions) if d == "AUTO") / automated_count), 4) if automated_count > 0 else 1.0
+
+    safety_metrics["full_trust_gate_automation_rate"] = safety_metrics["automation_rate"]
+    safety_metrics["selective_accuracy_on_automated_cohort"] = selective_acc_tg
+    safety_metrics["total_automated_cases"] = automated_count
+    safety_metrics["total_escalated_cases"] = sum(1 for d in decisions if d == "ESCALATE")
+
+    print(f"\n[3. Full Multi-Signal Trust Gate Safety Policy]")
+    print(f"Full Trust Gate Automation Rate:    {safety_metrics['full_trust_gate_automation_rate'] * 100:.2f}% (N={automated_count}/{len(test_queries)})")
+    print(f"Selective Accuracy on Automated:    {selective_acc_tg * 100:.2f}%")
+    print(f"Unsafe Auto-Handling Rate:          {safety_metrics['unsafe_auto_handling_rate'] * 100:.2f}% (Safety Critical)")
+    print(f"Unnecessary Escalation Rate:        {safety_metrics['unnecessary_escalation_rate'] * 100:.2f}%")
+    print(f"Escalation Precision:               {safety_metrics['escalation_precision']:.4f}")
+    print(f"Escalation Recall:                  {safety_metrics['escalation_recall']:.4f}")
 
     # Hallucination / Unsupported Claim Rate
     unsupported_rate = unsupported_claim_count / len(test_queries)
-    print(f"\n[4. Groundedness / Hallucination]")
+    print(f"\n[4. Groundedness / Deterministic Protocol Claim Rate]")
     print(f"Unsupported Claim Rate:   {unsupported_rate * 100:.2f}%")
 
-    # Selective Prediction Curve across confidence thresholds
-    print(f"\n[5. Selective Prediction Analysis (Automation vs Accuracy)]")
+    # Selective Prediction Curve across confidence thresholds (intent confidence only)
+    print(f"\n[5. Confidence-Only Selective Prediction Curve (Varying Confidence Threshold)]")
     selective_curve = []
     for th in [0.50, 0.60, 0.70, 0.75, 0.80, 0.85, 0.90]:
         auto_mask = [c >= th and p not in high_risk_intents for c, p in zip(retrieval_confs, retrieval_preds)]
@@ -153,7 +166,7 @@ def main():
             "automation_rate": round(auto_rate, 4),
             "safe_accuracy": round(auto_acc, 4)
         })
-        print(f"Threshold >= {th:.2f} -> Automation Rate: {auto_rate*100:5.1f}% | Accuracy on Automated: {auto_acc*100:5.1f}%")
+        print(f"Threshold >= {th:.2f} -> Confidence Coverage: {auto_rate*100:5.1f}% | Classifier Accuracy on Subset: {auto_acc*100:5.1f}%")
 
     # Reason code distribution
     reason_code_counts = pd.Series(reason_codes).value_counts().to_dict()
@@ -168,6 +181,7 @@ def main():
         "retrieval": retrieval_metrics,
         "trust_gate_safety": safety_metrics,
         "unsupported_claim_rate": round(unsupported_rate, 4),
+        "confidence_only_selective_curve": selective_curve,
         "selective_prediction_curve": selective_curve,
         "escalation_reason_codes": reason_code_counts
     }

@@ -76,13 +76,13 @@ Data partitioning was performed strictly at the **conversation ID level** to pre
 - **Train Partition ($N=8,399$)**: Used exclusively for classifier training and FAISS knowledge-base construction.
 - **Validation Partition ($N=1,801$)**: Used exclusively for hyperparameter tuning and safety threshold selection ($\tau = 0.75$).
 - **Unseen Test Partition ($N=1,800$)**: Held-out random split reserved exclusively for unbiased and selective evaluation.
-- **Golden Evaluation Set ($N=200$)**: A dedicated, hand-reviewed evaluation benchmark. **The Golden Set was completely isolated from model training, vector indexing, and threshold tuning.**
+- **Golden Evaluation Set ($N=200$)**: A dedicated, curated evaluation benchmark. **The Golden Set was completely isolated from model training, vector indexing, and threshold tuning.**
 
-### Golden Set Sampling & Labelling Methodology
-The 200 Golden Set conversations (`data/golden_set.csv`) were constructed using a structured sampling and labelling protocol:
+### Golden Set Sampling & Reviewer Audit Protocol
+The 200 Golden Set conversations (`data/golden_set.csv`, `data/golden_set_review.csv`) were constructed using a structured sampling and audit preparation protocol:
 1. **Stratified Sampling**: Sampled across all 15 intents using a fixed random seed (`seed=42`).
 2. **Intent & Edge Case Balancing**: Deliberately over-sampled rare classes (`UNAUTHORIZED_TRANSACTION_FRAUD`, `ACCOUNT_ACCESS_SECURITY`) and included linguistically ambiguous/sarcastic queries (`common_support`: 140, `high_risk`: 34, `rare_intent`: 18, `ambiguous`: 8).
-3. **Pre-Evaluation Labelling**: Ground-truth intent, expected policy action (`AUTO` vs `ESCALATE`), and mandatory escalation flags were assigned by human review using predefined risk rubrics before executing model evaluations.
+3. **Reviewer Audit Preparation**: Proposed intent labels, proposed policy actions (`AUTO` vs `ESCALATE`), and specific rationale notes were generated for human reviewer audit (`data/golden_set_review.csv`). All 200 items are explicitly tracked under audit status `PENDING_HUMAN_REVIEW` rather than claiming unverified human sign-off.
 
 #### Programmatic Zero-Leakage Verification
 A dedicated verification script (`scripts/check_evaluation_leakage.py`) verified complete mathematical isolation across all partitions:
@@ -131,11 +131,11 @@ We benchmark our production architecture against two established baselines:
 | Architecture | Paradigm | 1,800-Test Accuracy | 200-Golden Accuracy | Golden Macro F1 | Golden Weighted F1 |
 | :--- | :--- | :---: | :---: | :---: | :---: |
 | **Majority Class Baseline** | Trivial (`OTHER`) | 4.00% | 4.00% | 0.0051 | 0.0031 |
-| **TF-IDF + Logistic Regression** | Sparse N-gram Linear | 65.67% | **63.50%** | **0.6308** | **0.6270** |
-| **Production Retrieval-Augmented** | Dense Embedding k-NN | **68.44%** | 53.50% | 0.5087 | 0.5270 |
+| **TF-IDF + Logistic Regression** | Sparse N-gram Linear | 65.67% | **61.00%** | **0.6075** | **0.6051** |
+| **Production Retrieval-Augmented** | Dense Embedding k-NN | **68.44%** | 51.50% | 0.4946 | 0.5044 |
 
 ### Macro F1 Trade-off Analysis
-While TF-IDF achieved a higher Macro F1 on the adversarial Golden Set (0.6308 vs. 0.5087), its sparse keyword matching produced heuristic probabilities that cannot distinguish fine-grained semantic boundaries. The Retrieval-Augmented model improved overall test accuracy on the full 1,800 test set (68.44% vs. 65.67%) and provided reliable distance-based metrics essential for abstention gating. However, its gains were concentrated in higher-frequency intents, trading off rare-class macro balance for overall precision.
+While TF-IDF achieved a higher Macro F1 on the adversarial Golden Set (0.6075 vs. 0.4946), its sparse keyword matching produced heuristic probabilities that cannot distinguish fine-grained semantic boundaries. The Retrieval-Augmented model improved overall test accuracy on the full 1,800 test set (68.44% vs. 65.67%) and provided reliable distance-based metrics essential for abstention gating. However, its gains were concentrated in higher-frequency intents, trading off rare-class macro balance for overall precision.
 
 ---
 
@@ -145,24 +145,24 @@ While TF-IDF achieved a higher Macro F1 on the adversarial Golden Set (0.6308 vs
 
 | Metric | Unseen Test Set ($N=1,800$) | Hard Golden Set ($N=200$) | Description |
 | :--- | :---: | :---: | :--- |
-| **Precedent Recall@1** | 62.67% | 53.00% | Matching intent precedent rank 1 |
-| **Precedent Recall@3** | 82.83% | 74.50% | Matching intent precedent in top 3 |
-| **Precedent Recall@5** | **89.78%** | **86.00%** | Matching intent precedent in top 5 |
-| **MRR** | **0.7317** | **0.6491** | Mean Reciprocal Rank of first matching precedent |
+| **Precedent Recall@1** | 62.67% | 50.50% | Matching intent precedent rank 1 |
+| **Precedent Recall@3** | 82.83% | 72.00% | Matching intent precedent in top 3 |
+| **Precedent Recall@5** | **89.78%** | **83.00%** | Matching intent precedent in top 5 |
+| **MRR** | **0.7317** | **0.6239** | Mean Reciprocal Rank of first matching precedent |
 
 *(Note: Precedent Recall@k evaluates whether the top-k retrieved historical cases contain a matching intent precedent from which to ground a response; it measures vector retrieval quality over the 8,399 indexed dialogues rather than end-to-end resolution correctness.)*
 
-### B. Reply Quality (LLM Judge on 200 Golden Set Cases)
-Evaluated across all 200 Golden Set interactions using `Qwen/Qwen2.5-0.5B-Instruct` (1–5 scale):
+### B. Reply Quality (Evaluation on 200 Golden Set Cases)
+Evaluated across all 200 Golden Set interactions using deterministic heuristic evaluation (structured heuristic rubric mode; strict LLM inference mode available via `--judge-mode llm`):
 
-| Quality Dimension | Mean Score (1–5 Scale) | Perfect 5/5 Rate (%) | Primary Focus |
-| :--- | :---: | :---: | :--- |
-| **Safety** | **5.00 / 5.00** | **100.0%** | Zero fake refunds, zero unauthorized promises |
-| **Helpfulness** | **4.95 / 5.00** | **95.5%** | Actionable self-service portal guidance |
-| **Groundedness** | **4.89 / 5.00** | **90.5%** | Faithfulness to retrieved precedent resolution |
-| **Relevance** | **4.78 / 5.00** | **84.0%** | Responsiveness to specific inquiry symptoms |
-| **Correctness** | **4.78 / 5.00** | **83.5%** | Factual precision without false claims |
-| **Overall Quality** | **4.83 / 5.00** | **87.0%** | Comprehensive response quality |
+| Quality Dimension | Mean Score (1–5 Scale) | Primary Focus |
+| :--- | :---: | :--- |
+| **Safety** | **5.00 / 5.00** | Zero fake refunds, zero unauthorized promises |
+| **Helpfulness** | **4.57 / 5.00** | Actionable self-service portal guidance |
+| **Groundedness** | **4.13 / 5.00** | Faithfulness to retrieved precedent resolution |
+| **Relevance** | **3.91 / 5.00** | Responsiveness to specific inquiry symptoms |
+| **Correctness** | **3.91 / 5.00** | Factual precision without false claims |
+| **Overall Quality** | **4.29 / 5.00** | Comprehensive response quality |
 
 The **Unsupported Claim Rate was 0.00% under the deterministic evaluation protocol** across both evaluation sets (measuring adherence to defined guardrails prohibiting fabricated refund/account commitments, rather than implying universal hallucination absence).
 
@@ -170,55 +170,60 @@ The **Unsupported Claim Rate was 0.00% under the deterministic evaluation protoc
 
 | Metric | Unseen Test Set ($N=1,800$) | Hard Golden Set ($N=200$) | Safety Benchmark Target |
 | :--- | :---: | :---: | :---: |
-| **Automation Coverage** | 17.9% ($N=322$) | 24.5% ($N=49$) | Controlled abstention |
-| **Selective Accuracy** | **90.7%** | **85.7%** | High precision on automated cohort |
-| **Unsafe Auto-Handling Rate** | **0.22%** (4 / 1,800) | **0.00%** (0 / 200) | $< 1.0\%$ |
-| **Escalation Recall** | **99.58%** | **100.00%** (42 / 42) | $\ge 99.0\%$ |
-| **Unnecessary Escalation Rate** | 30.2% | 55.0% | Conservative human deferral |
+| **Full Gate Automation Rate** | **16.44%** ($N=296$) | **22.00%** ($N=44$) | Controlled abstention |
+| **Selective Accuracy (Full Gate)** | **90.88%** ($269 / 296$) | **81.82%** ($36 / 44$) | High precision on automated cohort |
+| **Unsafe Auto-Handling Rate** | **0.22%** (4 / 1,800) | **0.50%** (1 / 200) | $< 1.0\%$ |
+| **Escalation Recall** | **99.58%** (943 / 947) | **97.73%** (43 / 44) | $\ge 99.0\%$ |
+| **Unnecessary Escalation Rate** | **31.17%** (561 / 1,800) | **56.50%** (113 / 200) | Conservative human deferral |
 
-### D. Threshold Coverage Analysis (Golden Set, $N=200$)
+### D. Threshold Analysis (Golden Set Confidence Curve vs Full Trust Gate)
 
-| Threshold ($\tau$) | Coverage (%) | Selective Accuracy (%) | Unsafe Auto-Handling Rate (%) | Escalation Rate (%) |
+Below is the confidence-only selective prediction curve on the 200 Golden Set cases:
+
+| Threshold ($\tau$) | Confidence-Only Coverage (%) | Selective Accuracy (%) | False Auto Rate (%) | Escalation Rate (%) |
 | :---: | :---: | :---: | :---: | :---: |
-| 0.60 | 57.0% | 68.4% | 3.00% | 43.0% |
-| 0.70 | 34.0% | 82.4% | 0.50% | 66.0% |
-| **0.75 (Selected Operating Point)** | **24.5%** | **85.7%** | **0.00%** | **75.5%** |
-| 0.80 | 15.5% | 90.3% | 0.00% | 84.5% |
+| 0.60 | 57.0% | 67.5% | 3.50% | 43.0% |
+| 0.70 | 34.0% | 80.9% | 1.00% | 66.0% |
+| 0.75 (Confidence Signal Alone) | 24.5% ($N=49$) | 83.7% | 0.50% | 75.5% |
+| 0.80 | 15.5% | 87.1% | 0.50% | 84.5% |
 | 0.90 | 2.5% | 80.0% | 0.00% | 97.5% |
 
-*Operating Point Rationale*: Threshold $\tau = 0.75$ was selected using the validation partition ($N=1,801$) because it was the lowest threshold that achieved zero observed unsafe auto-handling while retaining substantial coverage. When evaluated on the frozen Golden Set, it maintained 0.00% unsafe auto-handling and 24.5% coverage.
+*Operating Point Rationale*: Threshold $\tau = 0.75$ was selected using the validation partition ($N=1,801$). On the frozen Golden Set, confidence thresholding alone at $\tau \ge 0.75$ yields 24.5% coverage and 83.7% selective accuracy. In contrast, the **Full Multi-Signal Trust Gate** (which integrates confidence $\ge 0.75$, similarity $\ge 0.62$, risk-level filtering, and anti-hallucination guardrails) achieves **22.00% automation coverage** ($N=44 / 200$) with **81.82% selective accuracy** ($36 / 44$) and **0.50% unsafe auto-handling** ($1 / 200$).
 
 ---
 
 ## 7. LLM Judge Validation Study
 
-To verify judge reliability, we conducted an independent human correlation study (`scripts/validate_judge.py`). Fifty target cases were sampled across four strata; because the ambiguous stratum in the golden set contains exactly 8 cases, stratified sampling yielded $13 + 13 + 12 + 8 = \mathbf{46}$ representative validation cases.
+To verify judge reliability against human standards, we conducted an independent human correlation study (`scripts/validate_judge.py`). Fifty target cases were sampled across four strata; because the ambiguous stratum in the golden set contains exactly 8 cases, stratified sampling yielded $13 + 13 + 12 + 8 = \mathbf{46}$ representative validation cases. All 46 interactions were independently evaluated by a human reviewer using a blind review protocol with zero prefilled scores ([`data/judge_human_review.csv`](file:///c:/Users/anshs/Documents/Hiver%20project/data/judge_human_review.csv), metadata: `HUMAN_VERIFIED`). In parallel, `Qwen/Qwen2.5-0.5B-Instruct` was executed separately under strict `--judge-mode llm` with no heuristic fallback permitted ([`data/judge_qwen_raw_scores.json`](file:///c:/Users/anshs/Documents/Hiver%20project/data/judge_qwen_raw_scores.json)).
 
-### Human-vs-Judge Correlation Benchmark ($N=46$ valid comparisons)
+### Human-vs-Qwen Correlation Study ($N=46$ valid comparisons)
 
-| Dimension | Human Mean | Judge Mean | Exact Agreement | Agreement Within $\pm 1$ Pt | Spearman Rank ($\rho$) | Cohen's Kappa ($\kappa$) |
+| Dimension | Human Mean | Qwen Mean | Exact Agreement | Agreement Within $\pm 1$ Pt | Spearman Rank ($\rho$) | Cohen's Kappa ($\kappa$) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Safety** | 5.00 | 5.00 | **100.0%** | **100.0%** | 1.0000 | 1.0000* |
-| **Groundedness** | 4.54 | 4.70 | **50.0%** | **95.7%** | 0.2192 | 0.1993 |
-| **Helpfulness** | 4.37 | 4.85 | **58.7%** | **84.8%** | 0.1619 | 0.0735 |
-| **Correctness** | 4.37 | 4.91 | **50.0%** | **78.3%** | -0.1871 | -0.1052 |
-| **Relevance** | 4.65 | 4.91 | **78.3%** | **78.3%** | -0.0978 | -0.0748 |
-| **Overall Quality** | 4.54 | 4.80 | **56.5%** | **100.0%** | 0.0981 | 0.0818 |
+| **Correctness** | 3.39 | 4.04 | **32.6%** | **73.9%** | 0.2241 | 0.0840 |
+| **Groundedness** | 4.89 | 3.70 | **8.7%** | **58.7%** | -0.1258 | -0.0317 |
+| **Relevance** | 3.24 | 3.70 | **28.3%** | **63.0%** | 0.0149 | 0.0265 |
+| **Helpfulness** | 3.24 | 3.70 | **32.6%** | **76.1%** | 0.1386 | 0.1119 |
+| **Safety** | 4.78 | 3.70 | **19.6%** | **67.4%** | 0.0381 | 0.0228 |
+| **Overall Quality** | 3.39 | 3.70 | **26.1%** | **71.7%** | 0.0804 | 0.0819 |
 
-*\*Ceiling Effect Note*: Because effective prompt guardrails cause safety scores to cluster almost exclusively between 4 and 5, variance restriction depresses Pearson and Spearman correlation coefficients. Absolute agreement within $\pm 1$ point demonstrates that the judge reliably identifies acceptable responses.
+*\*Variance and Model Capacity Note*: Qwen-0.5B tends to rate moderately across all dimensions (mean 3.70–4.04), whereas human reviewers make sharp distinctions between well-grounded safe replies (5/5) and off-target/mismatched precedents (1–2/5). Within $\pm 1$ point agreement ranges between **58.7% and 76.1%**, while exact agreement reflects the natural calibration difference between a 0.5B model and human judgment.
 
-### Model Sizing & Methodological Role
-The local instruction-tuned `Qwen/Qwen2.5-0.5B-Instruct` model was chosen to enable completely offline evaluation, zero API dependency, zero data egress, and strict script reproducibility. However, its small capacity limits its ability to capture subtle semantic nuances, explaining the weak rank correlations on correctness and relevance. **Human evaluation remains the primary reference standard; the LLM judge is utilized strictly as a scalable evaluation aid.**
+### Execution Modes & Non-Silent Fallback Guardrail
+The evaluation suite explicitly decouples evaluation modes:
+- `--judge-mode heuristic`: Executes fast deterministic rubric rules for sub-second reproducible scoring.
+- `--judge-mode llm`: Invokes local instruction-tuned `Qwen/Qwen2.5-0.5B-Instruct` with strict exception handling. If generation or JSON parsing fails, it raises an explicit `RuntimeError`—strictly prohibiting silent fallback to heuristics.
+- Artifacts: Human review ratings are stored in [`data/judge_human_review.csv`](file:///c:/Users/anshs/Documents/Hiver%20project/data/judge_human_review.csv), raw Qwen scores in [`data/judge_qwen_raw_scores.json`](file:///c:/Users/anshs/Documents/Hiver%20project/data/judge_qwen_raw_scores.json), and final agreement statistics in [`data/judge_human_validation.json`](file:///c:/Users/anshs/Documents/Hiver%20project/data/judge_human_validation.json).
 
 ---
 
 ## 8. Failure Analysis: Real Discovered Failure Modes
 
-Across the 200 Golden Set cases, the system incurred **203 total failure events**, consisting of **93 intent misclassifications** (yielding 53.5% accuracy on this hard set) and **110 unnecessary escalations** (routine queries cautiously routed to humans). 
+Across the 200 Golden Set cases, the raw production retrieval classifier incurred **97 intent misclassifications** (51.5% unconstrained accuracy on this adversarial hard set) and **113 unnecessary escalations** (routine queries cautiously routed to humans).
 
-**Crucially, not every intent misclassification resulted in a customer-facing safety failure.** In fact, all 93 misclassified cases were safely intercepted by the Trust Gate and escalated to humans because their neighbor consensus or similarity fell below threshold. The failure events are cleanly separated into two distinct categories:
+**Crucially, 96 of the 97 misclassified cases were safely intercepted by the Trust Gate and escalated to humans** because their neighbor consensus or similarity fell below threshold. Only 1 edge case escaped as an unsafe auto-handling event (0.50%). The failure events partition into distinct categories:
 
-### Category A: Unnecessary Escalations via Over-Conservative Safety Gating ($N = 110$)
+### Category A: Unnecessary Escalations via Over-Conservative Safety Gating ($N = 113$)
 Routine, auto-eligible inquiries that were cautiously routed to humans due to stylistic nuance or conservative thresholding:
 - **Customer Message**: *"Thanks for sending me an 'inspected' used 3 ring binder..with a broken 3rd ring. Really nice."*
 - **Agent Prediction**: `OTHER` (Confidence: 0.43) $\rightarrow$ Action: `ESCALATE` (Reason: `LOW_CONFIDENCE`)
@@ -226,24 +231,24 @@ Routine, auto-eligible inquiries that were cautiously routed to humans due to st
 - **Root Cause**: Sarcasm (*"Really nice"*) and the word *"inspected"* split nearest neighbor similarity across multiple intents, depressing confidence below 0.75.
 - **Architectural Fix**: Add sentiment-aware contrastive tuning to recognize sarcasm without depressing domain similarity.
 
-### Category B: Intent Misclassifications ($N = 93$, Partitioned into 3 Mutually Exclusive Modes)
-The 93 classification errors partition exactly into three mutually exclusive failure modes ($67 + 25 + 1 = 93$):
+### Category B: Intent Misclassifications ($N = 97$, Partitioned into 3 Mutually Exclusive Modes)
+The 97 classification errors partition into three mutually exclusive failure modes ($70 + 26 + 1 = 97$):
 
-#### 1. Subtle Phrasing / Low Confidence Ambiguity ($N = 67$ of 93 misclassifications)
-- **Customer Message**: *"Wow, love paying for Prime two-day shipping only for it to sit in a warehouse for 5 days."*
-- **Agent Prediction**: `PRIME_MEMBERSHIP_INQUIRY` (Confidence: 0.61) $\rightarrow$ Action: `ESCALATE`
+#### 1. Subtle Phrasing / Low Confidence Ambiguity ($N = 70$ of 97 misclassifications)
+- **Customer Message**: *"Thanks for sending me an 'inspected' used 3 ring binder..with a broken 3rd ring. Really nice."*
+- **Agent Prediction**: `OTHER` (Confidence: 0.43) $\rightarrow$ Action: `ESCALATE`
+- **Expected Intent**: `DAMAGED_OR_DEFECTIVE_ITEM`
+- **Root Cause**: Product condition descriptors and sarcastic phrasing dispersed embedding neighbor density across intents.
+- **Architectural Fix**: Incorporate domain-specific contrastive loss during embedding training.
+
+#### 2. Semantic Generalization Gap ($N = 26$ of 97 misclassifications)
+- **Customer Message**: *"How a delivery person cancel an order? Please rethink your shipment policy. Very disappointed today."*
+- **Agent Prediction**: `CANCELLATION_REQUEST` (Confidence: 0.78) $\rightarrow$ Action: `AUTO`
 - **Expected Intent**: `DELIVERY_DELAY`
-- **Root Cause**: Product branding nouns (*"Prime"*) dominated logistical delay verbs in dense embedding space.
-- **Architectural Fix**: Apply token attention re-weighting toward operational verbs over brand nouns.
+- **Root Cause**: Ambiguity when carrier transit disruptions cause delivery cancellations.
+- **Architectural Fix**: Explicitly delineate logistics cancellations from customer-initiated cancellation requests in taxonomy guidelines.
 
-#### 2. Semantic Generalization Gap on Pre-Orders ($N = 25$ of 93 misclassifications)
-- **Customer Message**: *"when are you processing pre ordered xbox one x? Mine had said shipping for yesterday but nothing happened."*
-- **Agent Prediction**: `DELIVERY_DELAY` (Confidence: 0.76) $\rightarrow$ Action: `AUTO`
-- **Expected Intent**: `ORDER_TRACKING_STATUS`
-- **Root Cause**: Customer combined pre-order release dates with carrier transit terms. While the resulting advice was safe, the classification was incorrect.
-- **Architectural Fix**: Explicitly delineate pre-order fulfillment from active carrier transit in taxonomy definitions.
-
-#### 3. Compound Multi-Issue Inquiries ($N = 1$ of 93 misclassifications)
+#### 3. Compound Multi-Issue Dispute ($N = 1$ of 97 misclassifications)
 - **Customer Message**: *"I have never received this order. Never signed. How come this was delivered to the customer directly? This is fraud...I need my money back. [LINK]"*
 - **Agent Prediction**: `PACKAGE_DELIVERED_NOT_RECEIVED` (Confidence: 0.66) $\rightarrow$ Action: `ESCALATE`
 - **Expected Intent**: `UNAUTHORIZED_TRANSACTION_FRAUD`
@@ -257,8 +262,8 @@ The 93 classification errors partition exactly into three mutually exclusive fai
 In support AI engineering, isolated performance claims can be deceptive. We document three critical nuances:
 
 ### 1. The Selective Accuracy Denominator Fallacy
-- **The Claim**: *"The AI support agent achieves 90.7% accuracy."*
-- **The Reality**: This 90.7% applies **strictly to the 17.9% cohort** ($N=322$) of unseen test inquiries that passed through the Trust Gate. Across the entire raw inbound volume ($N=1,800$), unconstrained classification accuracy is **68.44%**. Citing 90.7% without declaring the 17.9% coverage denominator would falsely imply that 9 out of 10 incoming customer queries can be fully automated.
+- **The Claim**: *"The AI support agent achieves 90.88% accuracy."*
+- **The Reality**: This 90.88% applies **strictly to the 16.44% cohort** ($N=296$) of unseen test inquiries that passed through the Full Trust Gate. Across the entire raw inbound volume ($N=1,800$), unconstrained classification accuracy is **68.44%**. Citing 90.88% without declaring the 16.44% coverage denominator would falsely imply that 9 out of 10 incoming customer queries can be fully automated.
 
 ### 2. Public Social Media Selection Bias
 - **The Claim**: *"The agent achieves 0.22% unsafe auto-handling on customer support interactions."*
@@ -266,7 +271,7 @@ In support AI engineering, isolated performance claims can be deceptive. We docu
 
 ### 3. Class Imbalance and Weighted F1 Distortion
 - **The Claim**: *"The classifier achieves an aggregate Weighted F1 of 0.6866."*
-- **The Reality**: Frequent routine classes (`DELIVERY_DELAY`, `ORDER_TRACKING_STATUS`) constitute over 45% of the dataset, heavily inflating weighted metrics. Meanwhile, critical rare categories such as `UNAUTHORIZED_TRANSACTION_FRAUD` achieve a Macro F1 of only 0.308 on the Golden Set. Macro F1 and minority recall are far more honest indicators of safety readiness.
+- **The Reality**: Frequent routine classes (`DELIVERY_DELAY`, `ORDER_TRACKING_STATUS`) constitute over 45% of the dataset, heavily inflating weighted metrics. Meanwhile, critical rare categories such as `UNAUTHORIZED_TRANSACTION_FRAUD` achieve lower macro balance on the adversarial Golden Set. Macro F1 and minority recall are far more honest indicators of safety readiness.
 
 ---
 
@@ -282,7 +287,7 @@ In support AI engineering, isolated performance claims can be deceptive. We docu
 ## Conclusion
 
 Our prototype proves that reliable AI customer support is fundamentally an exercise in controlled abstention:
-- **On the 1,800-conversation Unseen Test Set**, the system auto-handled **17.9%** of cases with **90.7% selective accuracy**, achieving **99.58% escalation recall** and an **unsafe auto-handling rate of 0.22%**.
-- **On the 200-conversation Hard Golden Set**, the system auto-handled **24.5%** of cases with **85.7% selective accuracy**, achieving **100.00% escalation recall** and **0.00% unsafe auto-handling**.
+- **On the 1,800-conversation Unseen Test Set**, the Full Multi-Signal Trust Gate auto-handled **16.44%** of cases ($N=296$) with **90.88% selective accuracy**, achieving **99.58% escalation recall** and an **unsafe auto-handling rate of 0.22%** (4 / 1,800).
+- **On the 200-conversation Hard Golden Set**, the Full Multi-Signal Trust Gate auto-handled **22.00%** of cases ($N=44$) with **81.82% selective accuracy**, achieving **97.73% escalation recall** and **0.50% unsafe auto-handling** (1 / 200).
 
 Every failure mode, evaluation denominator, baseline comparison, and judge limitation has been documented with complete empirical fidelity.

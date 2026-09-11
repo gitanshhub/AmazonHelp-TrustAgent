@@ -3,6 +3,13 @@ src/retrieval/embeddings.py
 Generates normalized embeddings using SentenceTransformer for historical support cases and incoming inquiries.
 """
 
+import os
+
+if "HF_HUB_OFFLINE" not in os.environ:
+    os.environ["HF_HUB_OFFLINE"] = "1"
+if "TRANSFORMERS_OFFLINE" not in os.environ:
+    os.environ["TRANSFORMERS_OFFLINE"] = "1"
+
 import numpy as np
 from typing import List, Union
 from sentence_transformers import SentenceTransformer

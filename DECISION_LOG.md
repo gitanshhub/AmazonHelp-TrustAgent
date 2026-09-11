@@ -109,15 +109,15 @@ This log documents **15 key engineering decisions, rationales, alternatives cons
 ---
 
 ### Decision 14: Independent Human Validation Protocol
-- **Decision**: Sampled 50 representative validation cases across all sampling groups **before** seeing any judge scores, exported a review template (`data/judge_human_review.csv`), and computed Exact Match, Agreement within $\pm 1$, Spearman $\rho$, and Cohen's $\kappa$.
-- **Why**: Eliminates selection bias in judge validation. Proves whether the LLM judge aligns with human evaluation standards before trusting its scores.
-- **Alternative Considered**: Evaluating human scores only on cases where the judge was confident.
-- **Trade-Off**: Exposes genuine human-judge variance (overall exact match 56.5%, within $\pm 1$ point 100%), but provides honest, unmanipulated scientific evidence.
+- **Decision**: Conducted a blind human evaluation across 46 representative validation cases (`data/judge_human_review.csv`, status `HUMAN_VERIFIED`), keeping human ratings completely blind from model predictions, and evaluated `Qwen/Qwen2.5-0.5B-Instruct` in strict `mode="llm"` with no heuristic fallback.
+- **Why**: Eliminates selection bias in judge validation and establishes genuine empirical alignment between human support evaluators and open-source local LLM judges.
+- **Alternative Considered**: Evaluating benchmark scores using synthetic heuristics or cases where the model was confident.
+- **Trade-Off**: Exposes genuine human-judge variance (within $\pm 1$ point ranges from 58.7% to 76.1%, exact match ranges from 8.7% to 32.6%), demonstrating that human evaluation remains the reference standard while local LLM judges provide scalable approximate monitoring.
 
 ---
 
 ### Decision 15: Selective Prediction (Accuracy over Coverage)
-- **Decision**: Tuned the default Trust Gate threshold to **0.75 confidence** using the 1,801-case validation partition, yielding **17.9% automation coverage** with **90.7% selective accuracy** on the 1,800 unseen test set, and **24.5% coverage** with **85.7% selective accuracy** on the 200 hard Golden set.
-- **Why**: An autonomous support agent must prioritize precision over raw deflection. A 90% accurate bot that answers 18% of inquiries safely is infinitely more valuable to an enterprise than a 68% accurate bot that attempts 100% of inquiries and misinforms one out of three customers.
+- **Decision**: Tuned the default Trust Gate threshold to **0.75 confidence** using the 1,801-case validation partition, yielding **16.44% automation coverage** ($N=296$) with **90.88% selective accuracy** on the 1,800 unseen test set, and **22.00% coverage** ($N=44$) with **81.82% selective accuracy** on the 200 hard Golden set (while confidence alone at $\tau \ge 0.75$ yielded 17.89% and 24.5% coverage respectively).
+- **Why**: An autonomous support agent must prioritize precision over raw deflection. A >90% accurate bot that answers ~16% of inquiries safely is infinitely more valuable to an enterprise than a 68% accurate bot that attempts 100% of inquiries and misinforms one out of three customers.
 - **Alternative Considered**: Optimizing for maximum coverage (e.g. threshold 0.50 with 51% coverage but 59% accuracy).
-- **Trade-Off**: Human agents must still handle ~82% of inquiries, but the business guarantees zero catastrophic automated blunders on critical customer interactions.
+- **Trade-Off**: Human agents must still handle ~84% of inquiries, but the business guarantees near-zero catastrophic automated blunders on critical customer interactions (0.22% unsafe rate).

@@ -241,9 +241,50 @@
       "false_escalations": 561,
       "safe_auto_handled": 292,
       "unsafe_auto_handled": 4
-    }
+    },
+    "full_trust_gate_automation_rate": 0.1644,
+    "selective_accuracy_on_automated_cohort": 0.9088,
+    "total_automated_cases": 296,
+    "total_escalated_cases": 1504
   },
   "unsupported_claim_rate": 0.0,
+  "confidence_only_selective_curve": [
+    {
+      "threshold": 0.5,
+      "automation_rate": 0.5156,
+      "safe_accuracy": 0.5938
+    },
+    {
+      "threshold": 0.6,
+      "automation_rate": 0.3972,
+      "safe_accuracy": 0.7063
+    },
+    {
+      "threshold": 0.7,
+      "automation_rate": 0.2439,
+      "safe_accuracy": 0.8383
+    },
+    {
+      "threshold": 0.75,
+      "automation_rate": 0.1789,
+      "safe_accuracy": 0.9068
+    },
+    {
+      "threshold": 0.8,
+      "automation_rate": 0.1156,
+      "safe_accuracy": 0.9471
+    },
+    {
+      "threshold": 0.85,
+      "automation_rate": 0.0539,
+      "safe_accuracy": 0.9588
+    },
+    {
+      "threshold": 0.9,
+      "automation_rate": 0.0117,
+      "safe_accuracy": 0.9524
+    }
+  ],
   "selective_prediction_curve": [
     {
       "threshold": 0.5,
