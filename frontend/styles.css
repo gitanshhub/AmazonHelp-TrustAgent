@@ -1,7 +1,7 @@
 :root {
   --bg-dark: #090d16;
-  --panel-bg: rgba(15, 23, 42, 0.78);
-  --card-bg: rgba(22, 33, 58, 0.88);
+  --panel-bg: rgba(15, 23, 42, 0.82);
+  --card-bg: rgba(22, 33, 58, 0.90);
   --border-color: rgba(255, 255, 255, 0.09);
   --border-active: rgba(0, 168, 225, 0.55);
   --text-main: #f1f5f9;
@@ -103,10 +103,52 @@ body {
   color: var(--text-muted);
 }
 
-.header-badges {
+.header-controls {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+}
+
+/* Evaluator Details Toggle Button */
+.evaluator-toggle-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 7px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.evaluator-toggle-btn:hover {
+  background: rgba(0, 168, 225, 0.12);
+  border-color: var(--brand-blue);
+}
+
+.evaluator-toggle-btn.active {
+  background: rgba(0, 168, 225, 0.22);
+  border-color: var(--brand-blue);
+  color: #fff;
+  box-shadow: 0 0 12px rgba(0, 168, 225, 0.35);
+}
+
+.toggle-badge {
+  font-size: 0.68rem;
+  font-family: var(--mono-family);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--brand-blue);
+}
+
+.evaluator-toggle-btn.active .toggle-badge {
+  background: var(--brand-blue);
+  color: #fff;
 }
 
 .badge {
@@ -116,12 +158,6 @@ body {
   border-radius: 20px;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-}
-
-.badge-brand {
-  background: rgba(255, 153, 0, 0.15);
-  color: var(--brand-orange);
-  border: 1px solid rgba(255, 153, 0, 0.3);
 }
 
 .badge-status {
@@ -314,6 +350,17 @@ body {
   position: relative;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
 textarea {
   width: 100%;
   background: rgba(9, 14, 26, 0.85);
@@ -371,10 +418,10 @@ textarea.input-invalid {
   background: linear-gradient(135deg, var(--brand-blue), #0284c7);
   color: #fff;
   border: none;
-  padding: 11px 22px;
+  padding: 12px 24px;
   border-radius: var(--radius-md);
   font-weight: 600;
-  font-size: 0.88rem;
+  font-size: 0.9rem;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -457,11 +504,27 @@ textarea.input-invalid {
   background: var(--coral-escalate);
 }
 
+/* Evaluator Collapsible Visibility */
+.evaluator-only {
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.evaluator-only.visible {
+  display: flex;
+}
+
 /* Pipeline Section & Stepper */
 .pipeline-section {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  background: rgba(9, 14, 26, 0.5);
+  padding: 14px;
+  border-radius: var(--radius-md);
+  border: 1px dashed rgba(0, 168, 225, 0.3);
 }
 
 .pipeline-header {
@@ -473,7 +536,7 @@ textarea.input-invalid {
 .section-label {
   font-size: 0.72rem;
   font-weight: 700;
-  color: var(--text-dim);
+  color: var(--brand-blue);
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -488,9 +551,9 @@ textarea.input-invalid {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px;
+  padding: 12px 14px;
   background: rgba(11, 18, 33, 0.7);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border-color);
 }
 
@@ -504,12 +567,12 @@ textarea.input-invalid {
 }
 
 .step-circle {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.08);
   color: var(--text-muted);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -559,14 +622,14 @@ textarea.input-invalid {
 }
 
 .step-label {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
   font-weight: 600;
   transition: color 0.3s;
 }
 
 .step-subtext {
-  font-size: 0.64rem;
+  font-size: 0.62rem;
   color: var(--text-dim);
 }
 
@@ -700,7 +763,7 @@ textarea.input-invalid {
   color: var(--text-muted);
 }
 
-/* 1. Decision Banner (AUTO vs ESCALATE) */
+/* 1. Customer-Facing Decision Banner */
 .decision-banner {
   padding: 18px 22px;
   border-radius: var(--radius-md);
@@ -731,15 +794,8 @@ textarea.input-invalid {
   gap: 10px;
 }
 
-.decision-action-title {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--text-dim);
-  letter-spacing: 0.06em;
-}
-
 .decision-badge {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 800;
   letter-spacing: 0.06em;
   padding: 6px 16px;
@@ -758,37 +814,65 @@ textarea.input-invalid {
   color: #ffffff;
 }
 
-.reason-code-wrapper {
+.customer-status-badge {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.customer-next-step {
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.reason-label {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--text-muted);
-}
-
-.reason-code-tag {
-  font-family: var(--mono-family);
-  font-size: 0.84rem;
-  font-weight: 700;
-  padding: 5px 12px;
-  background: rgba(0, 0, 0, 0.45);
-  border: 1px solid var(--border-color);
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text-main);
+  background: rgba(0, 0, 0, 0.25);
+  padding: 6px 12px;
   border-radius: 6px;
-  color: #fff;
-  letter-spacing: 0.04em;
+}
+
+.next-step-icon {
+  font-size: 1.1rem;
 }
 
 .decision-explanation {
-  font-size: 0.9rem;
+  font-size: 0.92rem;
   line-height: 1.5;
   color: var(--text-main);
   background: rgba(0, 0, 0, 0.15);
-  padding: 8px 12px;
+  padding: 10px 14px;
   border-radius: var(--radius-sm);
+}
+
+/* Primary Response Card (Prominent Customer-Facing) */
+.primary-response-card {
+  background: rgba(22, 33, 58, 0.95);
+  border: 1px solid var(--border-active);
+  box-shadow: 0 4px 20px rgba(0, 168, 225, 0.15);
+}
+
+.primary-response-card .response-body {
+  font-size: 1rem;
+  line-height: 1.65;
+  padding: 18px 20px;
+  background: rgba(9, 14, 26, 0.85);
+  border-left: 4px solid var(--brand-blue);
+  color: #fff;
+  font-style: normal;
+  border-radius: var(--radius-sm);
+}
+
+.response-footer {
+  margin-top: 4px;
+}
+
+.response-note {
+  font-size: 0.76rem;
+  color: var(--text-muted);
 }
 
 /* Result Cards */
@@ -816,7 +900,7 @@ textarea.input-invalid {
   letter-spacing: 0.06em;
 }
 
-/* Intent & Confidence */
+/* Technical Details Layout */
 .intent-row {
   display: flex;
   justify-content: space-between;
@@ -825,11 +909,29 @@ textarea.input-invalid {
 }
 
 .intent-name {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: #fff;
   font-family: var(--mono-family);
   letter-spacing: -0.01em;
+}
+
+.technical-tags {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reason-code-tag {
+  font-family: var(--mono-family);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: #fff;
+  letter-spacing: 0.03em;
 }
 
 .risk-tier-badge {
@@ -892,17 +994,6 @@ textarea.input-invalid {
   color: var(--amber-warn);
   background: var(--amber-bg);
   border-color: var(--amber-border);
-}
-
-.response-body {
-  font-size: 0.92rem;
-  line-height: 1.6;
-  color: #f1f5f9;
-  background: rgba(9, 14, 26, 0.65);
-  padding: 14px 16px;
-  border-radius: var(--radius-sm);
-  border-left: 3px solid var(--brand-blue);
-  font-style: italic;
 }
 
 /* Precedent Evidence Cards */

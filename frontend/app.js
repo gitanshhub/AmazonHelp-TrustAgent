@@ -11,13 +11,66 @@ const sampleInquiries = {
   ambiguous: "Hey someone check this thing right now it looks weird."
 };
 
+// Plain-language translations for customer-facing interface
+const customerExplanations = {
+  CONFIDENT_GROUNDED: {
+    status: "Instant Resolution Ready",
+    nextStep: "Our automated assistant has provided verified self-service guidance.",
+    explanation: "This inquiry matches standard delivery guidance and was verified against past support solutions."
+  },
+  PAYMENT_DISPUTE: {
+    status: "A specialist will help",
+    nextStep: "Connecting you to a billing specialist to review transactions safely.",
+    explanation: "Because this inquiry involves payment or duplicate charges, a human billing specialist will handle this personally to ensure your account security."
+  },
+  HIGH_RISK: {
+    status: "A specialist will help",
+    nextStep: "Routing directly to our account security team for immediate review.",
+    explanation: "To safeguard your account against unauthorized access or stolen cards, our security team will take care of this directly."
+  },
+  LOW_CONFIDENCE: {
+    status: "A specialist will help",
+    nextStep: "Connecting to a human customer support agent.",
+    explanation: "To make sure you get the most accurate answer without confusion, an agent will assist you personally."
+  },
+  NO_SIMILAR_CASE: {
+    status: "A specialist will help",
+    nextStep: "Connecting to a human customer support agent.",
+    explanation: "We could not find an exact historical match for this request, so a customer representative will help you directly."
+  },
+  ACCOUNT_SPECIFIC_ACTION: {
+    status: "A specialist will help",
+    nextStep: "An agent will securely access your account.",
+    explanation: "This request requires direct access to private account records, so an authorized agent will assist you."
+  }
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("analyze-form");
   const inputEl = document.getElementById("customer-input");
   const pills = document.querySelectorAll(".pill");
   const retryBtn = document.getElementById("retry-health-btn");
   const retryAnalysisBtn = document.getElementById("btn-retry-analysis");
-  const inputErrorMsg = document.getElementById("input-error-msg");
+  const evaluatorToggleBtn = document.getElementById("evaluator-toggle-btn");
+
+  // Handle Evaluator Details Toggle
+  if (evaluatorToggleBtn) {
+    evaluatorToggleBtn.addEventListener("click", () => {
+      const isExpanded = evaluatorToggleBtn.getAttribute("aria-expanded") === "true";
+      const nextState = !isExpanded;
+      evaluatorToggleBtn.setAttribute("aria-expanded", String(nextState));
+      evaluatorToggleBtn.classList.toggle("active", nextState);
+      
+      const badge = document.getElementById("toggle-badge");
+      if (badge) {
+        badge.textContent = nextState ? "Technical Proof (Active)" : "Technical Proof";
+      }
+
+      document.querySelectorAll(".evaluator-only").forEach(el => {
+        el.classList.toggle("visible", nextState);
+      });
+    });
+  }
 
   // Handle pill selection
   pills.forEach(pill => {
@@ -121,13 +174,13 @@ async function checkBackendHealth() {
       if (data.models_loaded) {
         if (healthEl) {
           healthEl.className = "badge badge-status";
-          healthEl.textContent = "🟢 Backend Online · Models Loaded";
+          healthEl.textContent = "🟢 Service Online";
         }
         if (offlineBanner) offlineBanner.style.display = "none";
       } else {
         if (healthEl) {
           healthEl.className = "badge badge-status offline";
-          healthEl.textContent = "🟡 Initializing Models...";
+          healthEl.textContent = "🟡 Initializing...";
         }
         if (offlineBanner) offlineBanner.style.display = "flex";
       }
@@ -144,7 +197,7 @@ function markBackendOffline() {
   const offlineBanner = document.getElementById("offline-banner");
   if (healthEl) {
     healthEl.className = "badge badge-status offline";
-    healthEl.textContent = "🔴 Offline · Server Not Started";
+    healthEl.textContent = "🔴 Offline";
   }
   if (offlineBanner) {
     offlineBanner.style.display = "flex";
@@ -177,7 +230,7 @@ async function analyzeMessage(text) {
     if (submitBtn) submitBtn.disabled = true;
     if (spinner) spinner.style.display = "inline-block";
     if (overlay) overlay.style.display = "flex";
-    if (statusLabel) statusLabel.textContent = "Evaluating Pipeline...";
+    if (statusLabel) statusLabel.textContent = "Checking Safety & Policies...";
 
     // Reset stepper UI
     steps.forEach(s => {
@@ -191,7 +244,7 @@ async function analyzeMessage(text) {
     });
 
     // Animate stage 1
-    if (stageLabel) stageLabel.textContent = "Step 1/4: Classifying Intent & Risk Profile...";
+    if (stageLabel) stageLabel.textContent = "Reviewing inquiry topic & safety policies...";
     if (steps[0]) steps[0].classList.add("processing");
 
     // Perform API call
@@ -201,7 +254,7 @@ async function analyzeMessage(text) {
       body: JSON.stringify({ message: text })
     });
 
-    // Provide progressive visual feedback through stages
+    // Progressive visual feedback
     await new Promise(r => setTimeout(r, 120));
     if (steps[0]) {
       steps[0].classList.remove("processing");
@@ -209,7 +262,7 @@ async function analyzeMessage(text) {
     }
     if (connectors[0]) connectors[0].classList.add("passed");
     if (steps[1]) steps[1].classList.add("processing");
-    if (stageLabel) stageLabel.textContent = "Step 2/4: Retrieving Top Historical Precedents (FAISS)...";
+    if (stageLabel) stageLabel.textContent = "Checking similar past support cases...";
 
     await new Promise(r => setTimeout(r, 120));
     if (steps[1]) {
@@ -218,7 +271,7 @@ async function analyzeMessage(text) {
     }
     if (connectors[1]) connectors[1].classList.add("passed");
     if (steps[2]) steps[2].classList.add("processing");
-    if (stageLabel) stageLabel.textContent = "Step 3/4: Drafting Grounded Brand Response...";
+    if (stageLabel) stageLabel.textContent = "Formulating verified brand reply...";
 
     const response = await fetchPromise;
 
@@ -233,7 +286,7 @@ async function analyzeMessage(text) {
     }
     if (connectors[2]) connectors[2].classList.add("passed");
     if (steps[3]) steps[3].classList.add("processing");
-    if (stageLabel) stageLabel.textContent = "Step 4/4: Multi-Signal Trust Gate Verification...";
+    if (stageLabel) stageLabel.textContent = "Running final multi-signal safety check...";
 
     await new Promise(r => setTimeout(r, 100));
 
@@ -258,6 +311,8 @@ async function analyzeMessage(text) {
 function renderResults(data) {
   const banner = document.getElementById("decision-banner");
   const badge = document.getElementById("decision-badge");
+  const customerStatusBadge = document.getElementById("customer-status-badge");
+  const nextStepText = document.getElementById("next-step-text");
   const reasonTag = document.getElementById("reason-code-tag");
   const explanation = document.getElementById("decision-explanation");
 
@@ -273,15 +328,34 @@ function renderResults(data) {
   const casesList = document.getElementById("cases-list");
   const evidenceCount = document.getElementById("evidence-count");
 
-  // 1. Decision Banner (Unmistakable AUTO vs ESCALATE)
+  // 1. Customer-Facing Status & Next Step Banner
   const isAuto = data.decision.action === "AUTO";
   banner.className = isAuto ? "decision-banner" : "decision-banner escalate";
   badge.className = isAuto ? "decision-badge badge-auto" : "decision-badge badge-escalate";
-  badge.textContent = isAuto ? "AUTO-HANDLE" : "ESCALATE TO HUMAN";
-  reasonTag.textContent = data.decision.reason_code;
-  explanation.textContent = data.decision.reason;
+  badge.textContent = isAuto ? "AUTO-HANDLE" : "A specialist will help";
 
-  // Stepper outcome update for step 4 (Trust Gate)
+  const plainInfo = customerExplanations[data.decision.reason_code] || {
+    status: isAuto ? "Instant Resolution Ready" : "A specialist will help",
+    nextStep: isAuto ? "Automated assistant can resolve this directly." : "Connecting to a human specialist.",
+    explanation: data.decision.reason
+  };
+
+  if (customerStatusBadge) {
+    customerStatusBadge.textContent = plainInfo.status;
+  }
+  if (nextStepText) {
+    nextStepText.textContent = plainInfo.nextStep;
+  }
+  if (explanation) {
+    explanation.textContent = plainInfo.explanation;
+  }
+
+  // Technical reason code tag in Evaluator section
+  if (reasonTag) {
+    reasonTag.textContent = data.decision.reason_code;
+  }
+
+  // Stepper outcome update for step 4 (Safety Check)
   const stepDecision = document.getElementById("step-decision");
   if (stepDecision) {
     const stepCircle = document.getElementById("circle-decision");
@@ -290,7 +364,7 @@ function renderResults(data) {
     if (isAuto) {
       stepDecision.classList.add("step-auto");
       if (stepCircle) stepCircle.textContent = "✓";
-      if (stepSub) stepSub.textContent = "AUTO: Passed";
+      if (stepSub) stepSub.textContent = "AUTO: Safe";
     } else {
       stepDecision.classList.add("step-escalate");
       if (stepCircle) stepCircle.textContent = "⚠";
@@ -298,11 +372,11 @@ function renderResults(data) {
     }
   }
 
-  // 2. Intent, Confidence, and Risk Profile
-  intentName.textContent = data.intent.name;
+  // 2. Intent, Confidence, and Technical Risk Profile
+  if (intentName) intentName.textContent = data.intent.name;
   const pct = (data.intent.confidence * 100).toFixed(1);
-  confBadge.textContent = `${pct}% Confidence`;
-  confBar.style.width = `${pct}%`;
+  if (confBadge) confBadge.textContent = `${pct}% Confidence`;
+  if (confBar) confBar.style.width = `${pct}%`;
 
   // Infer risk tier from audit trail / reason code
   if (riskBadge) {
@@ -325,70 +399,74 @@ function renderResults(data) {
     }
   }
 
-  // 3. Grounded Draft Response & Provenance Badge
-  respBody.textContent = `"${data.response.text}"`;
+  // 3. Drafted Support Reply & Provenance Badge
+  if (respBody) respBody.textContent = `"${data.response.text}"`;
   if (groundedBadge) {
     if (data.response && data.response.source === "retrieved_historical_case" && data.evidence && data.evidence.length > 0) {
       groundedBadge.className = "grounded-badge";
-      groundedBadge.textContent = `✓ Adapted from Precedent #${data.evidence[0].case_id}`;
+      groundedBadge.textContent = `✓ Adapted from Similar Case #${data.evidence[0].case_id}`;
     } else if (data.response && data.response.source === "conservative_fallback") {
       groundedBadge.className = "grounded-badge fallback";
-      groundedBadge.textContent = "⚠ Conservative Policy Guidance";
+      groundedBadge.textContent = "⚠ General Policy Guidance";
     } else {
       groundedBadge.className = "grounded-badge";
-      groundedBadge.textContent = "✓ Grounded in Historical Cases";
+      groundedBadge.textContent = "✓ Verified with Past Support Solutions";
     }
   }
 
-  // 4. Top 3 Precedent Cards (Readable & Provenanced)
-  casesList.innerHTML = "";
-  const precedentCount = data.evidence ? data.evidence.length : 0;
-  evidenceCount.textContent = `${precedentCount} Precedents Retrieved`;
+  // 4. Similar Past Support Cases (FAISS Retrieval)
+  if (casesList) {
+    casesList.innerHTML = "";
+    const precedentCount = data.evidence ? data.evidence.length : 0;
+    if (evidenceCount) evidenceCount.textContent = `${precedentCount} Similar Cases Found`;
 
-  if (data.evidence && data.evidence.length > 0) {
-    data.evidence.slice(0, 3).forEach((c, idx) => {
-      const div = document.createElement("div");
-      div.className = "case-item";
-      div.innerHTML = `
-        <div class="case-item-header">
-          <div class="case-identity">
-            <span class="case-rank">#${idx + 1}</span>
-            <span class="case-id">Case #${escapeHtml(String(c.case_id))}</span>
-            <span class="case-intent-chip">${escapeHtml(c.intent || "SUPPORT_QUERY")}</span>
+    if (data.evidence && data.evidence.length > 0) {
+      data.evidence.slice(0, 3).forEach((c, idx) => {
+        const div = document.createElement("div");
+        div.className = "case-item";
+        div.innerHTML = `
+          <div class="case-item-header">
+            <div class="case-identity">
+              <span class="case-rank">#${idx + 1}</span>
+              <span class="case-id">Case #${escapeHtml(String(c.case_id))}</span>
+              <span class="case-intent-chip">${escapeHtml(c.intent || "SUPPORT_QUERY")}</span>
+            </div>
+            <span class="case-sim">${(c.similarity * 100).toFixed(1)}% match</span>
           </div>
-          <span class="case-sim">${(c.similarity * 100).toFixed(1)}% match</span>
-        </div>
-        <div class="case-query-box">
-          <div class="case-field-lbl">Customer Inquiry:</div>
-          <div class="case-query">"${escapeHtml(c.customer_inquiry)}"</div>
-        </div>
-        <div class="case-res-box">
-          <div class="case-field-lbl">Amazon Historical Resolution:</div>
-          <div class="case-res">${escapeHtml(c.brand_resolution)}</div>
-        </div>
-      `;
-      casesList.appendChild(div);
-    });
-  } else {
-    casesList.innerHTML = `<div class="case-item" style="color: var(--text-muted); font-size: 0.82rem;">No relevant historical precedents found in FAISS index above similarity threshold.</div>`;
+          <div class="case-query-box">
+            <div class="case-field-lbl">Customer Inquiry:</div>
+            <div class="case-query">"${escapeHtml(c.customer_inquiry)}"</div>
+          </div>
+          <div class="case-res-box">
+            <div class="case-field-lbl">Amazon Historical Resolution:</div>
+            <div class="case-res">${escapeHtml(c.brand_resolution)}</div>
+          </div>
+        `;
+        casesList.appendChild(div);
+      });
+    } else {
+      casesList.innerHTML = `<div class="case-item" style="color: var(--text-muted); font-size: 0.82rem;">No relevant historical cases found above similarity threshold.</div>`;
+    }
   }
 
-  // 5. Audit Trail
-  auditList.innerHTML = "";
-  let passCount = 0;
-  data.audit_trail.forEach(item => {
-    const li = document.createElement("li");
-    const isPass = item.status === "PASS";
-    if (isPass) passCount++;
-    li.className = isPass ? "audit-item pass" : "audit-item fail";
-    li.innerHTML = `
-      <span class="audit-icon">${isPass ? "✓" : "⚠"}</span>
-      <span class="audit-text"><strong>${escapeHtml(item.check)}:</strong> ${escapeHtml(item.detail)}</span>
-    `;
-    auditList.appendChild(li);
-  });
-  if (auditSummaryPill) {
-    auditSummaryPill.textContent = `${passCount} / ${data.audit_trail.length} Checks Passed`;
+  // 5. Detailed Audit Trail
+  if (auditList) {
+    auditList.innerHTML = "";
+    let passCount = 0;
+    data.audit_trail.forEach(item => {
+      const li = document.createElement("li");
+      const isPass = item.status === "PASS";
+      if (isPass) passCount++;
+      li.className = isPass ? "audit-item pass" : "audit-item fail";
+      li.innerHTML = `
+        <span class="audit-icon">${isPass ? "✓" : "⚠"}</span>
+        <span class="audit-text"><strong>${escapeHtml(item.check)}:</strong> ${escapeHtml(item.detail)}</span>
+      `;
+      auditList.appendChild(li);
+    });
+    if (auditSummaryPill) {
+      auditSummaryPill.textContent = `${passCount} / ${data.audit_trail.length} Checks Passed`;
+    }
   }
 }
 
