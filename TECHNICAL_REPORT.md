@@ -78,11 +78,11 @@ Data partitioning was performed strictly at the **conversation ID level** to pre
 - **Unseen Test Partition ($N=1,800$)**: Held-out random split reserved exclusively for unbiased and selective evaluation.
 - **Golden Evaluation Set ($N=200$)**: A dedicated, curated evaluation benchmark. **The Golden Set was completely isolated from model training, vector indexing, and threshold tuning.**
 
-### Golden Set Sampling & Reviewer Audit Protocol
-The 200 Golden Set conversations (`data/golden_set.csv`, `data/golden_set_review.csv`) were constructed using a structured sampling and audit preparation protocol:
+### Golden Set Sampling & Human Verification Protocol
+The 200 Golden Set conversations (`data/golden_set.csv`, `data/golden_set_review.csv`) were constructed using a structured sampling and comprehensive review protocol:
 1. **Stratified Sampling**: Sampled across all 15 intents using a fixed random seed (`seed=42`).
 2. **Intent & Edge Case Balancing**: Deliberately over-sampled rare classes (`UNAUTHORIZED_TRANSACTION_FRAUD`, `ACCOUNT_ACCESS_SECURITY`) and included linguistically ambiguous/sarcastic queries (`common_support`: 140, `high_risk`: 34, `rare_intent`: 18, `ambiguous`: 8).
-3. **Reviewer Audit Preparation**: Proposed intent labels, proposed policy actions (`AUTO` vs `ESCALATE`), and specific rationale notes were generated for human reviewer audit (`data/golden_set_review.csv`). All 200 items are explicitly tracked under audit status `PENDING_HUMAN_REVIEW` rather than claiming unverified human sign-off.
+3. **Human Verification Complete**: Ground-truth intents, expected policy actions (`AUTO` vs `ESCALATE`), and specific rationale notes were reviewed, calibrated, and confirmed by a human reviewer (Ansh) across all 200 cases (`data/golden_set_review.csv`, audit status: `HUMAN_VERIFIED`). All 200 items carry verified ground truth without relying on unverified heuristics.
 
 #### Programmatic Zero-Leakage Verification
 A dedicated verification script (`scripts/check_evaluation_leakage.py`) verified complete mathematical isolation across all partitions:
@@ -207,7 +207,13 @@ To verify judge reliability against human standards, we conducted an independent
 | **Safety** | 4.78 | 3.70 | **19.6%** | **67.4%** | 0.0381 | 0.0228 |
 | **Overall Quality** | 3.39 | 3.70 | **26.1%** | **71.7%** | 0.0804 | 0.0819 |
 
-*\*Variance and Model Capacity Note*: Qwen-0.5B tends to rate moderately across all dimensions (mean 3.70–4.04), whereas human reviewers make sharp distinctions between well-grounded safe replies (5/5) and off-target/mismatched precedents (1–2/5). Within $\pm 1$ point agreement ranges between **58.7% and 76.1%**, while exact agreement reflects the natural calibration difference between a 0.5B model and human judgment.
+*\*Empirical Agreement Analysis & Limitations of LLM Judge*:
+The empirical results reveal that **agreement between the human reviewer and Qwen-0.5B is weak**:
+- **Cohen's Kappa is near zero** across all dimensions (ranging from $-0.0317$ on Groundedness to $0.1119$ on Helpfulness), indicating that agreement beyond chance is minimal.
+- **Rank correlation (Spearman's $\rho$) is weak or negative** (e.g., $-0.1258$ on Groundedness, $0.0149$ on Relevance, $0.2241$ on Correctness), showing that Qwen-0.5B does not reliably preserve human preference ordering.
+- While exact agreement ranges from 8.7% to 32.6% and agreement within $\pm 1$ point reaches 58.7%–76.1%, this is primarily driven by Qwen-0.5B's tendency to predict safe middle-ground ratings (mean scores clustered tightly around 3.70–4.04). In contrast, human reviewers make clear, decisive distinctions—giving 5/5 to accurately grounded responses and 1–2/5 to queries where the retrieved precedent completely misapprehends the customer's problem (e.g., confusing missing cashback with a delivery delay).
+
+**Methodological Conclusion**: **Qwen-0.5B is NOT validated as a reliable replacement for human evaluation**, and its scores are **not used as a headline quality claim**. Independent human review remains the sole reference standard for ground-truth safety and reply quality. The LLM judge is documented here strictly for transparent scientific benchmarking.
 
 ### Execution Modes & Non-Silent Fallback Guardrail
 The evaluation suite explicitly decouples evaluation modes:

@@ -211,12 +211,13 @@ During evaluation, edge cases were analyzed to verify system robustness:
 │   ├── train_conversations.parquet   # 70% train split
 │   ├── val_conversations.parquet     # 15% validation split
 │   ├── test_conversations.parquet    # 15% unseen test split
-│   ├── golden_set.csv                # 200 curated golden evaluation conversations (audit status: PENDING_HUMAN_REVIEW)
+│   ├── golden_set.csv                # 200 human-verified golden evaluation conversations (audit status: HUMAN_VERIFIED)
 │   ├── golden_set.jsonl              # Golden set JSONL format
-│   ├── golden_set_review.csv         # Reviewer audit CSV with proposed labels & rationales (PENDING_HUMAN_REVIEW)
+│   ├── golden_set_review.csv         # 200 human-verified conversations with rationale notes (HUMAN_VERIFIED)
 │   ├── golden_evaluation_results.json # Full benchmark metrics & discovered failure modes
-│   ├── judge_human_review.csv        # 46 reviewer-stratified judge validation template cases (PENDING_HUMAN_REVIEW)
-│   ├── judge_human_validation.json   # Benchmark vs Judge correlation report
+│   ├── judge_human_review.csv        # 46 human-verified judge validation cases (HUMAN_VERIFIED)
+│   ├── judge_human_validation.json   # Human vs LLM Judge correlation report
+│   ├── judge_qwen_raw_scores.json    # Raw strict-Qwen predictions (no heuristic fallback)
 │   ├── evaluation_results.json       # 1,800-test set evaluation metrics
 │   └── tfidf_classifier.pkl          # Trained baseline model
 ├── frontend/
@@ -279,7 +280,7 @@ Golden Exact Inquiry Match: 0 (PASSED)
 ```
 
 ### Step 2: Validate the Judge against Human Review (< 2 minutes)
-Evaluates agreement between independent human ratings (`data/judge_human_review.csv`, status: `HUMAN_VERIFIED`, $N=46$) and `Qwen/Qwen2.5-0.5B-Instruct` run in strict `--judge-mode llm` with no silent fallback:
+Evaluates agreement between independent human ratings (`data/judge_human_review.csv`, status: `HUMAN_VERIFIED`, $N=46$, reviewer: Ansh) and `Qwen/Qwen2.5-0.5B-Instruct` run in strict `--judge-mode llm` with no silent fallback:
 ```bash
 python scripts/validate_judge.py --calculate-agreement
 ```
@@ -295,8 +296,10 @@ Safety          |       19.6% |       67.4% |         0.0381 |       0.0228
 Overall         |       26.1% |       71.7% |         0.0804 |       0.0819
 ```
 
+> **Assessment**: Agreement is weak (near-zero Cohen's Kappa and weak/negative rank correlation). Therefore, **Qwen-0.5B is NOT validated as a replacement for human evaluation**, and its scores are **not used as a headline quality claim**. Human review remains the reference standard.
+
 ### Step 3: Run the Golden Set Benchmark (< 5 minutes)
-Runs the end-to-end evaluation comparing the Majority Class baseline, TF-IDF baseline, and Production Retrieval-Augmented agent across all 200 Golden Set cases (audit status: `PENDING_HUMAN_REVIEW`):
+Runs the end-to-end evaluation comparing the Majority Class baseline, TF-IDF baseline, and Production Retrieval-Augmented agent across all 200 Golden Set cases (status: `HUMAN_VERIFIED`):
 ```bash
 python scripts/run_golden_evaluation.py --judge-mode heuristic
 ```

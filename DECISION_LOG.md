@@ -109,10 +109,10 @@ This log documents **15 key engineering decisions, rationales, alternatives cons
 ---
 
 ### Decision 14: Independent Human Validation Protocol
-- **Decision**: Conducted a blind human evaluation across 46 representative validation cases (`data/judge_human_review.csv`, status `HUMAN_VERIFIED`), keeping human ratings completely blind from model predictions, and evaluated `Qwen/Qwen2.5-0.5B-Instruct` in strict `mode="llm"` with no heuristic fallback.
+- **Decision**: Conducted a blind human evaluation across 46 representative validation cases (`data/judge_human_review.csv`, status `HUMAN_VERIFIED`, reviewer: Ansh), keeping human ratings completely blind from model predictions, and evaluated `Qwen/Qwen2.5-0.5B-Instruct` in strict `mode="llm"` with no heuristic fallback.
 - **Why**: Eliminates selection bias in judge validation and establishes genuine empirical alignment between human support evaluators and open-source local LLM judges.
 - **Alternative Considered**: Evaluating benchmark scores using synthetic heuristics or cases where the model was confident.
-- **Trade-Off**: Exposes genuine human-judge variance (within $\pm 1$ point ranges from 58.7% to 76.1%, exact match ranges from 8.7% to 32.6%), demonstrating that human evaluation remains the reference standard while local LLM judges provide scalable approximate monitoring.
+- **Trade-Off & Outcome**: Exposes that agreement is weak (near-zero Cohen's Kappa, weak/negative rank correlation, exact match 8.7%–32.6%). Consequently, **Qwen-0.5B is NOT validated as a replacement for human evaluation** and its scores are not used as a headline quality claim; human review remains the sole reference standard for ground truth.
 
 ---
 
