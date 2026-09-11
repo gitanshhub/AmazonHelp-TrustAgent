@@ -1,6 +1,6 @@
 {
   "golden_set_size": 200,
-  "audit_status": "PENDING_HUMAN_REVIEW",
+  "audit_status": "HUMAN_VERIFIED",
   "judge_metadata": {
     "judge_mode_configured": "heuristic",
     "judge_tier_executed": "heuristic",

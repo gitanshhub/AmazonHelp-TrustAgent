@@ -261,6 +261,14 @@ The 97 classification errors partition into three mutually exclusive failure mod
 - **Root Cause**: Simultaneous mention of missing delivery and fraud. The retriever matched delivery precedents, but the Trust Gate successfully escalated due to low confidence (0.66 < 0.75).
 - **Architectural Fix**: Multi-label intent extraction where any detected high-risk sub-intent triggers immediate escalation.
 
+### Category C: High-Risk Safety Escape (The Single Unsafe Auto-Handling Event, $N = 1$)
+The evaluation report's fifth discovered failure mode represents the sole unsafe auto-handling escape ($1 / 200 = 0.50\%$) observed on the Golden Set:
+- **Customer Message**: *"Dear am I wrong in asking refund for this? #nokiascam #scamdeal #amazonscam #NewsAlert #news #harassment [LINK]"*
+- **Agent Prediction**: `REFUND_NOT_RECEIVED` (Confidence: 0.81) $\rightarrow$ Action: `AUTO`
+- **Expected Intent**: `UNAUTHORIZED_TRANSACTION_FRAUD` $\rightarrow$ Expected Action: `ESCALATE`
+- **Root Cause**: The customer inquiry contains explicit scam and harassment hashtags (`#nokiascam`, `#scamdeal`, `#amazonscam`, `#harassment`), but the presence of the inquiry token *"refund"* biased nearest neighbor retrieval toward routine refund guidance. The model assigned 0.81 confidence to `REFUND_NOT_RECEIVED` (a low-risk self-service intent), allowing the transaction to slip through the Trust Gate as a false auto-handling event.
+- **Next-Step Hypothesis**: Intent classification alone is insufficient for adversarial social media escalations. In addition to intent-based risk routing, an independent unconditional lexical and semantic safety scanner must run in parallel. Any inquiry containing critical safety tokens (e.g., `scam`, `fraud`, `harassment`, `stolen`, `police`, `unauthorized`) will immediately trigger an escalation override regardless of the primary intent's confidence score.
+
 ---
 
 ## 9. What Is Misleading About My Headline Number?

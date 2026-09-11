@@ -382,8 +382,8 @@ function renderResults(data) {
   if (riskBadge) {
     const isHighRisk = data.decision.reason_code === "HIGH_RISK" || 
                        data.decision.reason_code === "PAYMENT_DISPUTE" ||
-                       data.intent.name === "CRITICAL_SECURITY_FRAUD" ||
-                       data.intent.name === "PAYMENT_BILLING_DISPUTE";
+                       data.intent.name === "UNAUTHORIZED_TRANSACTION_FRAUD" ||
+                       data.intent.name === "PAYMENT_AND_BILLING_ISSUE";
     const isMedRisk = data.decision.reason_code === "LOW_CONFIDENCE" || 
                       data.decision.reason_code === "NO_SIMILAR_CASE";
 

@@ -5,7 +5,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688.svg)](https://fastapi.tiangolo.com/)
 [![FAISS](https://img.shields.io/badge/FAISS-CPU-orange.svg)](https://github.com/facebookresearch/faiss)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests: 26 Passed](https://img.shields.io/badge/Tests-26%20Passed-brightgreen.svg)](tests/)
+[![Tests: 29 Passed](https://img.shields.io/badge/Tests-29%20Passed-brightgreen.svg)](tests/)
 
 ---
 
@@ -330,8 +330,8 @@ pytest tests/ -v
 ### 2. Setup Virtual Environment
 ```bash
 # Clone the repository
-git clone <repo-url>
-cd <repo-folder>
+git clone https://github.com/gitanshhub/AmazonHelp-TrustAgent.git
+cd AmazonHelp-TrustAgent
 
 # Create virtual environment
 python -m venv .venv

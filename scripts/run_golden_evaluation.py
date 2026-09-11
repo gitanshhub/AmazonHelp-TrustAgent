@@ -47,7 +47,17 @@ def main(golden_csv="data/golden_set.csv", judge_mode="auto"):
         raise FileNotFoundError(f"Golden set file missing at {golden_csv}")
 
     df_golden = pd.read_csv(golden_csv)
-    print(f"Loaded {len(df_golden)} curated golden evaluation conversations (Status: PENDING_HUMAN_REVIEW).")
+    # Derive audit status from verified golden dataset
+    if "audit_status" in df_golden.columns:
+        statuses = set(df_golden["audit_status"].dropna().unique())
+        if len(statuses) == 1:
+            audit_status = list(statuses)[0]
+        else:
+            audit_status = "PARTIALLY_VERIFIED" if "HUMAN_VERIFIED" in statuses else "PENDING_HUMAN_REVIEW"
+    else:
+        audit_status = "PENDING_HUMAN_REVIEW"
+
+    print(f"Loaded {len(df_golden)} curated golden evaluation conversations (Status: {audit_status}).")
 
     # 1. Load Models & Classifiers
     print("\nLoading Production AI Agent components...")
@@ -302,7 +312,7 @@ def main(golden_csv="data/golden_set.csv", judge_mode="auto"):
     # Save complete JSON
     out_payload = {
         "golden_set_size": len(queries),
-        "audit_status": "PENDING_HUMAN_REVIEW",
+        "audit_status": audit_status,
         "judge_metadata": judge_meta,
         "baselines": {
             "majority": majority_metrics,
